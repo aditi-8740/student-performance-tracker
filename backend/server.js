@@ -7,9 +7,13 @@ const classRoutes = require('./routes/classRoutes');
 const assignmentRoutes = require('./routes/assignmentRoutes');
 const gradeRoutes = require('./routes/gradeRoutes');
 const performanceRoutes = require('./routes/performanceRoutes');
-
+const cors = require('cors');
 connectDB();
 
+app.use(cors({
+  origin: "http://localhost:5173", // Allow only your React app
+  credentials: true                // Allow cookies/headers if needed
+}));
 app.use(express.json());
 
 app.use('/api',authRoutes);
