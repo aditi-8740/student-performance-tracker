@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL : "https://student-performance-tracker-nfx4.onrender.com/",
+    baseURL : "https://student-performance-tracker-nfx4.onrender.com/api/",
 });
 
 // attach token automatically
