@@ -5,19 +5,20 @@ A full-stack web application designed to manage classes, assignments, and track 
 ---
 
 ## 🌐 Live Demo
-Frontend: https://student-performance-tracker-tau.vercel.app/
-Backend API: https://student-performance-tracker-nfx4.onrender.com/
+* Frontend: https://student-performance-tracker-tau.vercel.app/
+* Backend API: https://student-performance-tracker-nfx4.onrender.com/
 
 ---
 
 ## 🔐 Demo Credentials
-Teacher:
-email: sanjeev@example.com
-password: password123
 
-Student:
-email: aditi@gmail.com
-password: password123
+* Teacher:
+  * email: sanjeev@example.com
+  * password: password123
+
+* Student:
+  * email: aditi@gmail.com
+  * password: password123
 
 ---
 
@@ -77,8 +78,74 @@ password: password123
 ## 📁 Project Structure
 
 ```
-/server   → Backend (Node.js, Express, MongoDB)
-/client   → Frontend (React + Tailwind)
+student-performance-tracker/
+│
+├── backend/
+│   ├── config/
+│   │   └── db.js
+│   │
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── classController.js
+│   │   ├── assignmentController.js
+│   │   ├── submissionController.js
+│   │   └── performanceController.js
+│   │   └── gradeController.js
+│   │
+│   ├── middleware/
+│   │   ├── authMiddleware.js
+│   │   └── roleMiddleware.js
+│   │
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Class.js
+│   │   ├── Assignment.js
+│   │   └── Submission.js
+│   │
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── classRoutes.js
+│   │   ├── assignmentRoutes.js
+│   │   ├── submissionRoutes.js
+│   │   ├── gradeRoutes.js
+│   │   └── performanceRoutes.js
+│   │
+│   ├── .env
+│   ├── server.js
+│   └── package.json
+│
+├── frontend/
+│   ├── public/
+│   │
+│   ├── src/
+│   │   ├── api/
+│   │   │   └── axios.js
+│   │   │
+│   │   ├── components/
+│   │   │   ├── AppLayout.jsx
+│   │   │   ├── AppSidebar.jsx
+│   │   │   ├── dashboard/
+│   │   │   │   ├── StudentView.jsx
+│   │   │   │   └── TeacherView.jsx
+│   │   │   └── ui/   (shadcn components)
+│   │   │
+│   │   ├── pages/
+│   │   │   ├── Login.jsx
+│   │   │   ├── Signup.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── Classes.jsx
+│   │   │   └── ClassDetail.jsx
+│   │   │
+│   │   ├── hooks/
+│   │   ├── assets/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   │
+│   ├── index.html
+│   └── package.json
+│
+├── README.md
+└── .gitignore
 ```
 
 ---
