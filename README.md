@@ -4,6 +4,23 @@ A full-stack web application designed to manage classes, assignments, and track 
 
 ---
 
+## 🌐 Live Demo
+Frontend: https://student-performance-tracker-tau.vercel.app/
+Backend API: https://student-performance-tracker-nfx4.onrender.com/
+
+---
+
+## 🔐 Demo Credentials
+Teacher:
+email: sanjeev@example.com
+password: password123
+
+Student:
+email: aditi@gmail.com
+password: password123
+
+---
+
 ## 🚀 Features
 
 ### 🔐 Authentication
