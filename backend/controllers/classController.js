@@ -47,10 +47,15 @@ const joinClass = async (req,res) =>{
         if(!joinedClass){    //if joined class not found or not a valid join code
             return res.status(404).json({message: "class not found"});
         }
+
         //if student already joined
-        if(joinedClass.students.map( id =>{ id.toString()} ).includes(req.user._id.toString() )  ){
+        const isAlreadyJoined = joinedClass.students.some(
+            (id) => id.toString() === req.user._id.toString()
+        );
+
+        if(isAlreadyJoined){
             return res.status(409).json({message:"Already joined"});
-        }
+        }     
 
         await Class.findByIdAndUpdate(
             joinedClass._id,
@@ -68,7 +73,31 @@ const joinClass = async (req,res) =>{
         res.status(500).json({message: error.message});
     }
 }
+
+const getMyClasses = async (req, res) => {
+  try {
+    let classes;
+
+    if (req.user.role === "teacher") {
+      classes = await Class.find({ teacher: req.user._id });
+    } else {
+      classes = await Class.find({ students: req.user._id });
+    }
+
+    res.json(classes);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+const getClassDetails = async (req, res) => {
+    const cls = await Class.findById(req.params.id);
+    res.json(cls);
+}
+
 module.exports = {
     createClass,
-    joinClass
+    joinClass,
+    getMyClasses,
+    getClassDetails
 };
