@@ -9,11 +9,12 @@ const gradeRoutes = require('./routes/gradeRoutes');
 const performanceRoutes = require('./routes/performanceRoutes');
 const submissionRoutes = require('./routes/submissionRoutes');
 const cors = require('cors');
+const PORT = process.env.PORT || 8000;
 connectDB();
 
 app.use(cors({
-  origin: "http://localhost:5173", // Allow only your React app
-  credentials: true                // Allow cookies/headers if needed
+  origin: "*",           // Later restrict to frontend URL
+  credentials: true      // Allow cookies/headers if needed
 }));
 app.use(express.json());
 
@@ -30,5 +31,5 @@ app.get('/', (req, res) => {
 })
 
 app.listen(process.env.PORT , () => {
-  console.log(`Example app listening on port ${process.env.PORT}`)
+  console.log(`Server running on port ${PORT}`)
 })
