@@ -13,10 +13,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import DemoCredentials from "@/components/DemoCredentials";
 
 function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
+
+  const fillDemo = (email, password) => {
+    setForm({ email, password });
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -57,6 +62,7 @@ function Login() {
                     id="email"
                     type="email"
                     name="email"
+                    value={form.email}
                     placeholder="m@example.com"
                     required
                     autoComplete="email"
@@ -66,9 +72,7 @@ function Login() {
                 <div className="grid gap-2">
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
-                    <span                     
-                      className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                    >
+                    <span className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
                       Forgot your password?
                     </span>
                   </div>
@@ -76,13 +80,14 @@ function Login() {
                     id="password"
                     name="password"
                     type="password"
+                    value={form.email}
                     required
                     onChange={handleChange}
                   />
                 </div>
                 <Button type="submit" className="w-full cursor-pointer">
-              Login
-            </Button>
+                  Login
+                </Button>
               </div>
             </form>
           </CardContent>
@@ -93,7 +98,10 @@ function Login() {
                 <Link to="/signup"> Signup Here </Link>
               </span>
             </div>
-            
+
+            {/* demo credentials for quick access */}
+            <DemoCredentials onFillDemo={fillDemo} />
+
           </CardFooter>
         </Card>
       </div>
