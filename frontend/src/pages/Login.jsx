@@ -30,7 +30,7 @@ function Login() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("role", res.data.role);
 
-      navigate("/app/dashboard");
+      navigate("/app/classes");
     } catch (error) {
       alert("Login failed");
     }
