@@ -89,7 +89,7 @@ function Login() {
                 <Button type="submit" className="w-full cursor-pointer">
                   Login
                 </Button>
-              </div>stat
+              </div>
             </form>
           </CardContent>
           <CardFooter className="flex-col gap-2">
