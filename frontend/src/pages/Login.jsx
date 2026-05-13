@@ -80,7 +80,8 @@ function Login() {
                     id="password"
                     name="password"
                     type="password"
-                    value={form.email}
+                    value={form.password}
+                    placeholder="password"
                     required
                     onChange={handleChange}
                   />
@@ -88,7 +89,7 @@ function Login() {
                 <Button type="submit" className="w-full cursor-pointer">
                   Login
                 </Button>
-              </div>
+              </div>stat
             </form>
           </CardContent>
           <CardFooter className="flex-col gap-2">
