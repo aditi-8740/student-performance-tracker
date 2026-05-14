@@ -88,9 +88,7 @@ student-performance-tracker/
 │   │   ├── authController.js
 │   │   ├── classController.js
 │   │   ├── assignmentController.js
-│   │   ├── submissionController.js
-│   │   └── performanceController.js
-│   │   └── gradeController.js
+│   │   └── userController.js
 │   │
 │   ├── middleware/
 │   │   ├── authMiddleware.js
@@ -106,9 +104,7 @@ student-performance-tracker/
 │   │   ├── authRoutes.js
 │   │   ├── classRoutes.js
 │   │   ├── assignmentRoutes.js
-│   │   ├── submissionRoutes.js
-│   │   ├── gradeRoutes.js
-│   │   └── performanceRoutes.js
+│   │   └── userRoutes.js
 │   │
 │   ├── .env
 │   ├── server.js
@@ -124,6 +120,7 @@ student-performance-tracker/
 │   │   ├── components/
 │   │   │   ├── AppLayout.jsx
 │   │   │   ├── AppSidebar.jsx
+│   │   │   ├── DemoCredentials.jsx
 │   │   │   ├── dashboard/
 │   │   │   │   ├── StudentView.jsx
 │   │   │   │   └── TeacherView.jsx
@@ -138,10 +135,17 @@ student-performance-tracker/
 │   │   │
 │   │   ├── hooks/
 │   │   ├── assets/
+│   │   ├── lib/
 │   │   ├── App.jsx
+│   │   ├── App.css
+│   │   ├── index.css
 │   │   └── main.jsx
 │   │
 │   ├── index.html
+│   ├── vite.config.js
+│   ├── jsconfig.json
+│   ├── components.json
+│   ├── eslint.config.js
 │   └── package.json
 │
 ├── README.md
@@ -154,24 +158,29 @@ student-performance-tracker/
 
 ### Auth
 
-* POST `/api/signup`
-* POST `/api/login`
+* POST `/api/auth/signup` - Register a new user
+* POST `/api/auth/login` - Login a user
+* GET `/api/auth/test` - Test route (Protected)
 
 ### Classes
 
-* POST `/api/create-class`
-* POST `/api/join-class`
+* GET `/api/classes` - Get all classes for authenticated user
+* POST `/api/classes` - Create a new class (Teacher only)
+* POST `/api/classes/enroll` - Enroll in a class (Student only)
+* GET `/api/classes/:classId` - Get class details
+* GET `/api/classes/:classId/assignments` - Get all assignments for a class
+* GET `/api/classes/:classId/performance` - Get class performance (Teacher only)
 
 ### Assignments
 
-* POST `/api/create-assignment`
-* POST `/api/submit-assignment`
-* POST `/api/grade-assignment`
+* POST `/api/assignments` - Create a new assignment (Teacher only)
+* POST `/api/assignments/:assignmentId/submissions` - Submit an assignment (Student only)
+* GET `/api/assignments/:assignmentId/submissions` - Get all submissions (Teacher only)
+* PATCH `/api/assignments/:assignmentId/submissions/:submissionId` - Grade a submission (Teacher only)
 
-### Performance
+### Users
 
-* GET `/api/student-performance`
-* GET `/api/class-performance/:classId`
+* GET `/api/users/performance` - Get student performance (Student only)
 
 ---
 

@@ -21,7 +21,7 @@ export default function ClassDetail() {
     if (!title) return;
 
     try {
-      await API.post("/create-assignment", {
+      await API.post("/assignments", {
         title,
         description,
         dueDate,
@@ -41,8 +41,8 @@ export default function ClassDetail() {
     if (!answer) return;
 
     try {
-      await API.post("/submit-assignment", {
-        assignmentId,
+      await API.post(`/assignments/${assignmentId}/submissions`, {
+        
         answer,
       });
 
@@ -54,22 +54,21 @@ export default function ClassDetail() {
 
   const fetchSubmissions = async (assignmentId) => {
     try {
-      const res = await API.get(`/submissions/${assignmentId}`);
+      const res = await API.get(`/assignments/${assignmentId}/submissions`);
       setSubmissions(res.data); console.log(res)
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleGrade = async (submissionId) => {
+  const handleGrade = async (assignmentId, submissionId) => {
     const marks = prompt("Enter marks");
 
     if (!marks) return;
 
     try {
-      await API.post("/grade-assignment", {
-        submissionId,
-        marks,
+      await API.patch(`/assignments/${assignmentId}/submissions/${submissionId}`, {       
+        marks
       });
 
       alert("Graded");
@@ -82,11 +81,11 @@ export default function ClassDetail() {
     const fetchData = async () => {
       try {
         // get class info for classId
-        const res1 = await API.get(`/class/${classId}`);
+        const res1 = await API.get(`/classes/${classId}`);
         setClassData(res1.data);
 
         // get assignments for classId
-        const res2 = await API.get(`/assignments/${classId}`);
+        const res2 = await API.get(`/classes/${classId}/assignments`);
         setAssignments(res2.data);
       } catch (err) {
         console.error(err);
@@ -189,7 +188,7 @@ export default function ClassDetail() {
                 {/* Grade button */}
                 <button
                   className="bg-red-600 text-white px-2 py-1 rounded mt-2"
-                  onClick={() => handleGrade(s._id)}
+                  onClick={() => handleGrade(s.assignmentId, s._id)}
                 >
                   Grade
                 </button>

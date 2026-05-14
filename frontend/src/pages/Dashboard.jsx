@@ -26,7 +26,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const res = await API.get("/my-classes");
+        const res = await API.get("/classes");
         setClasses(res.data);
         
       } catch (error) {
@@ -44,10 +44,10 @@ export default function Dashboard() {
         setLoading(true);
 
         if (role === "student") {
-          const res = await API.get("/student-performance");
+          const res = await API.get("/users/performance");
           setData(res.data);
         } else if (selectedClass) {
-          const res = await API.get(`/class-performance/${selectedClass}`);
+          const res = await API.get(`/classes/${selectedClass}/performance`);
           setData(res.data);
         }
       } catch (err) {

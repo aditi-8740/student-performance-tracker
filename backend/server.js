@@ -5,9 +5,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const classRoutes = require('./routes/classRoutes');
 const assignmentRoutes = require('./routes/assignmentRoutes');
-const gradeRoutes = require('./routes/gradeRoutes');
-const performanceRoutes = require('./routes/performanceRoutes');
-const submissionRoutes = require('./routes/submissionRoutes');
+const userRoutes = require('./routes/userRoutes');
 const cors = require('cors');
 const PORT = process.env.PORT || 8000;
 connectDB();
@@ -18,12 +16,10 @@ app.use(cors({
 }));
 app.use(express.json());
 
-app.use('/api',authRoutes);
-app.use('/api',classRoutes);
-app.use('/api',assignmentRoutes);
-app.use('/api',gradeRoutes);
-app.use('/api',performanceRoutes);
-app.use('/api',submissionRoutes);
+app.use('/api/auth',authRoutes);
+app.use('/api/classes',classRoutes);
+app.use('/api/assignments',assignmentRoutes);
+app.use('/api/users',userRoutes);
 
 //test route
 app.get('/', (req, res) => {

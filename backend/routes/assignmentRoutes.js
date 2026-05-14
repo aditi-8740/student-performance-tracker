@@ -2,15 +2,45 @@ const express = require('express');
 const router = express.Router();
 const {authorizeTeacher, authorizeStudent} = require('../middleware/roleMiddleware');
 const {protect} = require('../middleware/authMiddleware');
-const {createAssignment, submitAssignment, getAssignmentDetails} = require('../controllers/assignmentController')
+const {
+    createAssignment,
+    submitAssignment,
+    getSubmissions,
+    gradeAssignment
+} = require('../controllers/assignmentController')
 
-//CREATE ASSIGNMENT(by teacher only)
-router.post('/create-assignment', protect, authorizeTeacher , createAssignment);
+/**
+ * @resource Assignments
+ * @base /api/assignments
+ */
 
-//SUBMIT ASSIGNMENT(by student only)
-router.post('/submit-assignment', protect, authorizeStudent , submitAssignment);
 
-//assignment details
-router.get('/assignments/:classId' , protect, getAssignmentDetails );
+/* 
+@route POST /api/assignments
+@desc Create a new assignment
+@access Private (Teacher Only)
+*/
+router.post('/', protect, authorizeTeacher , createAssignment);
+
+/* 
+@route POST /api/assignments/:id/submissions
+@desc Submit a assignment
+@access Private (Student Only)
+*/
+router.post('/:assignmentId/submissions', protect, authorizeStudent , submitAssignment);
+
+/* 
+@route GET /api/assignments/:id/submissions
+@desc Get all Submissions for a specific assignment
+@access Private (Teacher Only)
+*/
+router.get('/:assignmentId/submissions', protect, authorizeTeacher, getSubmissions );
+
+/*
+@route PATCH /api/assignments/:id/submissions
+@desc Grade a specific assignment
+@access Private (Teacher Only)
+*/
+router.patch("/:assignmentId/submissions/:submissionId", protect, authorizeTeacher, gradeAssignment);
 
 module.exports = router;

@@ -1,16 +1,24 @@
-const express = require('express');
-const router = express.Router();
-const {signup, login} = require('../controllers/authController');
-const {protect} = require('../middleware/authMiddleware');
+const {Router} = require('express');
+const router = Router();
+const { signup, login } = require('../controllers/authController');
+const { protect } = require('../middleware/authMiddleware');
 
-//SIGNUP ROUTE
+/*
+@route POST /api/auth/signup
+@desc Register a new user
+@access Public
+*/
 router.post('/signup', signup);
 
-//LOGIN ROUTE
+/*
+@route POST /api/auth/login
+@desc Login a user
+@access Public
+*/
 router.post('/login', login);
 
 //test route
-router.get('/test', protect, (req,res)=>{
+router.get('/test', protect, (req, res) => {
     res.json(req.user);
 })
 

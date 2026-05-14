@@ -44,7 +44,7 @@ export default function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await API.post("/signup", form);
+      await API.post("/auth/signup", form);
       navigate("/");
     } catch (err) {
       alert("Signup failed");

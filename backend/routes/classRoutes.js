@@ -1,18 +1,61 @@
 const express = require('express');
 const router = express.Router();
-const {authorizeTeacher, authorizeStudent} = require('../middleware/roleMiddleware');
-const {protect} = require('../middleware/authMiddleware');
-const {createClass, joinClass, getMyClasses, getClassDetails} = require('../controllers/classController');
+const { authorizeTeacher, authorizeStudent } = require('../middleware/roleMiddleware');
+const { protect } = require('../middleware/authMiddleware');
+const {
+    createClass,
+    joinClass,
+    getClasses,
+    getClassDetails,
+    getClassAssignmentDetails,
+    getClassPerformance
+} = require('../controllers/classController');
 
-//CREATE-CLASS(by teacher only)
-router.post('/create-class', protect, authorizeTeacher, createClass );
+/**
+ * @resource Classes
+ * @base /api/classes
+*/
 
-//JOIN-CLASS(by student only)
-router.post('/join-class' , protect, authorizeStudent , joinClass);
+/* 
+@route GET /api/classes
+@desc Get all classes details for the authenticated user (Teacher sees owned, Student sees enrolled)
+@access Private (Teacher, Student)
+*/
+router.get('/', protect, getClasses);
 
-//My Classes
-router.get('/my-classes' , protect, getMyClasses);
+/* 
+@route POST /api/classes
+@desc Create a class
+@access Private (Teacher Only)
+*/
+router.post('/', protect, authorizeTeacher, createClass);
 
-//class info
-router.get('/class/:id' , protect, getClassDetails);
+/* 
+@route GET /api/classes
+@desc join a class
+@access Private (Student Only)
+*/
+router.post('/enroll', protect, authorizeStudent, joinClass);
+
+/* 
+@route GET /api/classes/:id
+@desc Get detailed information for a specific class
+@access Private (Teacher, Student)
+*/
+router.get('/:classId', protect, getClassDetails);
+
+/* 
+@route GET /api/classes/:classId/assignments
+@desc get all assignments for a specific class
+@access Private (Teacher, Student)
+*/
+router.get('/:classId/assignments', protect, getClassAssignmentDetails);
+
+/* 
+@route GET /api/classes/performance
+@desc Get class performance
+@access Private (Teacher Only)
+*/
+router.get('/:classId/performance', protect , authorizeTeacher , getClassPerformance )
+
 module.exports = router;

@@ -14,7 +14,7 @@ export default function Classes() {
 
   //fetch classes
   const fetchClasses = async () => {
-    const res = await API.get("/my-classes");
+    const res = await API.get("/classes");
     setClasses(res.data);
   };
   useEffect(() => {
@@ -24,14 +24,14 @@ export default function Classes() {
   //join class (student)
   const handleJoin = async () => {
     try {
-      await API.post("/join-class", { joinCode });
+      await API.post("/classes/enroll", { joinCode });
       setJoinCode("");
       fetchClasses();
     } catch (error) {
       alert("Failed to join");
     }
   };
-
+// j31p60
   //create class (teacher)
   const handleCreate = async () => {
     const title = prompt("enter class title");
@@ -39,7 +39,7 @@ export default function Classes() {
     if (!title || !subject) return;
 
     try {
-      await API.post("/create-class", { title, subject });
+      await API.post("/classes", { title, subject });
       fetchClasses();
     } catch (error) {
       alert("Failed to create");
