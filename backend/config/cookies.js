@@ -2,7 +2,7 @@ import config from '../config/config.js';
 
 export const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
-  sameSite: config.NOVE_ENV === "production" ? "none" : "lax",
+  sameSite: config.NODE_ENV === "production" ? "none" : "lax",
   secure: config.NODE_ENV ==='production' ? true : false,
   path: "/",
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
