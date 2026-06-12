@@ -1,7 +1,7 @@
-const Assignment = require("../models/Assignment");
-const Class = require("../models/Class");
-const User = require("../models/User");
-const Submission = require("../models/Submission");
+import Assignment from '../models/Assignment.js';
+import Class from '../models/Class.js';
+import User from '../models/User.js';
+import Submission from '../models/Submission.js';
 
 const generateJoinCode = () => {
   return Math.random().toString(36).substring(2, 8);
@@ -171,7 +171,7 @@ const getClassPerformance = async (req,res)=>{
 
 }
 
-module.exports = {
+export {
   createClass,
   joinClass,
   getClasses,

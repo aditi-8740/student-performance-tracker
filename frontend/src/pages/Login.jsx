@@ -1,5 +1,6 @@
 import { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { toast, Toaster } from "sonner";
 import API from "../api/axios";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,15 +14,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import DemoCredentials from "@/components/DemoCredentials";
+import { useAuth } from "@/context/AuthContext";
+import tokenManager from "@/services/tokenManager.js";
+import { GoogleLogin } from "@react-oauth/google";
 
 function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
+  const { setAccessToken, setUser } = useAuth();
   const navigate = useNavigate();
-
-  const fillDemo = (email, password) => {
-    setForm({ email, password });
-  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -32,19 +32,46 @@ function Login() {
     try {
       const res = await API.post("/auth/login", form);
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("role", res.data.role);
+      setAccessToken(res.data.accessToken);
+      tokenManager.setAccessToken(res.data.accessToken);
+      setUser(res.data.user);
 
       navigate("/app/classes");
     } catch (error) {
-      alert("Login failed");
+      toast.error(error.response?.data?.message || "Login failed");
     }
+  };
+
+  const handleLoginSuccess = async (credentialResponse) => {
+    try {
+      const idToken = credentialResponse.credential;
+
+      const res = await API.post("/auth/google", {
+        idToken,
+      });
+
+      setAccessToken(res.data.accessToken);
+
+      tokenManager.setAccessToken(res.data.accessToken);
+
+      setUser(res.data.user);
+
+      navigate("/app/classes");
+    } catch (error) {
+      console.error("Google login failed");
+    }
+  };
+
+  const handleLoginError = () => {
+    console.error("Google Login Failed");
+    toast.error("Google login failed");
   };
 
   return (
     <>
+      <Toaster position="top-center" />
       <div className="flex items-center justify-center min-h-screen">
-        <Card className="w-full max-w-sm">
+        <Card className="w-full max-w-sm md:max-w-md lg:max-w-lg px-2 py-8 md:p-8 lg:p-10 mx-4">
           <CardHeader>
             <CardTitle className="text-2xl text-center">
               Login to your account
@@ -73,7 +100,7 @@ function Login() {
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
                     <span className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
-                      Forgot your password?
+                      <Link to="/forgot-password">Forgot your password?</Link>
                     </span>
                   </div>
                   <Input
@@ -86,11 +113,20 @@ function Login() {
                     onChange={handleChange}
                   />
                 </div>
-                <Button type="submit" className="w-full cursor-pointer">
+                <Button
+                  type="submit"
+                  className="w-full cursor-pointer hover:bg-primary/90"
+                >
                   Login
                 </Button>
+                <div className="text-center -mt-3 mb-3">or</div>
               </div>
             </form>
+            <GoogleLogin
+              onSuccess={handleLoginSuccess}
+              onError={handleLoginError}
+            />
+            
           </CardContent>
           <CardFooter className="flex-col gap-2">
             <div>
@@ -99,10 +135,6 @@ function Login() {
                 <Link to="/signup"> Signup Here </Link>
               </span>
             </div>
-
-            {/* demo credentials for quick access */}
-            <DemoCredentials onFillDemo={fillDemo} />
-
           </CardFooter>
         </Card>
       </div>

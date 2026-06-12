@@ -1,6 +1,6 @@
-const Submission = require("../models/Submission");
-const Class = require("../models/Class");
-const User = require("../models/User");
+import Submission from '../models/Submission.js';
+import Class from '../models/Class.js';
+import User from '../models/User.js';
 
 const getStudentPerformance = async (req, res) => {
     try {
@@ -39,6 +39,6 @@ const getStudentPerformance = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     getStudentPerformance,
 }

@@ -1,6 +1,6 @@
 # 🎓 Student Performance Tracker
 
-A full-stack web application designed to manage classes, assignments, and track student performance with role-based access for teachers and students.
+A full-stack web application for managing classes, assignments, and student performance with teacher and student role-based access.
 
 ---
 
@@ -13,12 +13,12 @@ A full-stack web application designed to manage classes, assignments, and track 
 ## 🔐 Demo Credentials
 
 * Teacher:
-  * email: sanjeev@example.com
-  * password: password123
+  * email: himanshusharma6132.as@gmail.com
+  * password: 1212
 
 * Student:
-  * email: aditi@gmail.com
-  * password: password123
+  * email: aditisharma371.as@gmail.com
+  * password: 1234
 
 ---
 
@@ -26,35 +26,29 @@ A full-stack web application designed to manage classes, assignments, and track 
 
 ### 🔐 Authentication
 
-* User Signup & Login (JWT-based)
-* Role-based access (Student / Teacher)
+* JWT access token and refresh token flow
+* HTTP-only refresh token cookie
+* Role-based access for Teachers and Students
+* OTP verification during signup
+* Password reset and password change support
+* Google OAuth login/signup
 
 ### 🏫 Class Management
 
 * Teachers can create classes
-* Students can join classes using a unique join code
+* Students can enroll in classes
+* Teachers and students can view class details and class assignments
 
 ### 📝 Assignment System
 
-* Teachers can create assignments for their classes
-* Students can submit assignments
-* Prevents duplicate submissions
-
-### 📊 Grading System
-
-* Teachers can evaluate and assign marks
-* Supports re-grading
+* Teachers create assignments for classes
+* Students submit assignment responses
+* Teachers review and grade submissions
 
 ### 📈 Performance Tracking
 
-* Students can view:
-
-  * Average marks
-  * Highest & Lowest scores
-* Teachers can view:
-
-  * Class-wise performance
-  * Individual student averages
+* Students view personal performance metrics
+* Teachers access class performance analytics
 
 ---
 
@@ -64,12 +58,12 @@ A full-stack web application designed to manage classes, assignments, and track 
 
 * Node.js
 * Express.js
-* MongoDB (Mongoose)
-* JWT Authentication
+* MongoDB with Mongoose
+* JWT authentication and refresh session handling
 
 ### Frontend
 
-* React (Vite)
+* React with Vite
 * Tailwind CSS
 * Axios
 
@@ -82,12 +76,15 @@ student-performance-tracker/
 │
 ├── backend/
 │   ├── config/
+│   │   ├── config.js
+│   │   ├── cookies.js
 │   │   └── db.js
 │   │
 │   ├── controllers/
 │   │   ├── authController.js
 │   │   ├── classController.js
 │   │   ├── assignmentController.js
+│   │   ├── performanceController.js
 │   │   └── userController.js
 │   │
 │   ├── middleware/
@@ -95,23 +92,32 @@ student-performance-tracker/
 │   │   └── roleMiddleware.js
 │   │
 │   ├── models/
-│   │   ├── User.js
-│   │   ├── Class.js
 │   │   ├── Assignment.js
-│   │   └── Submission.js
+│   │   ├── Class.js
+│   │   ├── otp.js
+│   │   ├── Session.js
+│   │   ├── Submission.js
+│   │   └── User.js
 │   │
 │   ├── routes/
 │   │   ├── authRoutes.js
 │   │   ├── classRoutes.js
 │   │   ├── assignmentRoutes.js
+│   │   ├── performanceRoutes.js
 │   │   └── userRoutes.js
 │   │
-│   ├── .env
+│   ├── services/
+│   │   └── emailService.js
+│   │
+│   ├── utils/
+│   │   └── utils.js
+│   │
 │   ├── server.js
 │   └── package.json
 │
 ├── frontend/
 │   ├── public/
+│   │   └── ...
 │   │
 │   ├── src/
 │   │   ├── api/
@@ -120,62 +126,117 @@ student-performance-tracker/
 │   │   ├── components/
 │   │   │   ├── AppLayout.jsx
 │   │   │   ├── AppSidebar.jsx
-│   │   │   ├── DemoCredentials.jsx
+│   │   │   ├── OtpVerification.jsx
+│   │   │   ├── SessionCard.jsx
 │   │   │   ├── dashboard/
 │   │   │   │   ├── StudentView.jsx
 │   │   │   │   └── TeacherView.jsx
-│   │   │   └── ui/   (shadcn components)
+│   │   │   └── ui/
+│   │   │       ├── alert-dialog.jsx
+│   │   │       ├── avatar.jsx
+│   │   │       ├── badge.jsx
+│   │   │       ├── button.jsx
+│   │   │       ├── card.jsx
+│   │   │       ├── dropdown-menu.jsx
+│   │   │       ├── field.jsx
+│   │   │       ├── input-otp.jsx
+│   │   │       ├── input.jsx
+│   │   │       ├── label.jsx
+│   │   │       ├── select.jsx
+│   │   │       ├── separator.jsx
+│   │   │       ├── sheet.jsx
+│   │   │       ├── sidebar.jsx
+│   │   │       ├── skeleton.jsx
+│   │   │       ├── sonner.jsx
+│   │   │       ├── table.jsx
+│   │   │       ├── tooltip.jsx
+│   │   │       └── ...
 │   │   │
-│   │   ├── pages/
-│   │   │   ├── Login.jsx
-│   │   │   ├── Signup.jsx
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── Classes.jsx
-│   │   │   └── ClassDetail.jsx
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx
 │   │   │
 │   │   ├── hooks/
-│   │   ├── assets/
+│   │   │   └── use-mobile.js
+│   │   │
 │   │   ├── lib/
+│   │   │   └── utils.js
+│   │   │
+│   │   ├── pages/
+│   │   │   ├── ChangePassword.jsx
+│   │   │   ├── ClassDetail.jsx
+│   │   │   ├── Classes.jsx
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── ForgotPassword.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── ResetPassword.jsx
+│   │   │   ├── SecurityPage.jsx
+│   │   │   ├── Signup.jsx
+│   │   │   └── UserSessions.jsx
+│   │   │
+│   │   ├── services/
+│   │   │   ├── AuthService.js
+│   │   │   └── tokenManager.js
+│   │   │
 │   │   ├── App.jsx
 │   │   ├── App.css
 │   │   ├── index.css
 │   │   └── main.jsx
 │   │
 │   ├── index.html
-│   ├── vite.config.js
-│   ├── jsconfig.json
-│   ├── components.json
 │   ├── eslint.config.js
-│   └── package.json
+│   ├── jsconfig.json
+│   ├── package.json
+│   └── vite.config.js
 │
-├── README.md
+└── README.md
 └── .gitignore
 ```
 
 ---
 
-## ⚙️ API Endpoints (Key)
+## ⚙️ Authentication Flow
+
+* `accessToken` is returned by `/api/auth/login` and `/api/auth/signup`.
+* `refreshToken` is stored as an HTTP-only cookie and refreshed at `/api/auth/tokens/refresh`.
+* Frontend uses `axios` interceptors to refresh expired access tokens.
+* Protected routes require `Authorization: Bearer <accessToken>`.
+* `POST /api/auth/logout` ends the current session.
+* `POST /api/auth/logout-all` ends all user sessions.
+
+---
+
+## 📦 API Endpoints
 
 ### Auth
 
 * POST `/api/auth/signup` - Register a new user
 * POST `/api/auth/login` - Login a user
-* GET `/api/auth/test` - Test route (Protected)
+* POST `/api/auth/verifications` - Verify signup OTP
+* POST `/api/auth/tokens/refresh` - Refresh access token using refresh token cookie
+* POST `/api/auth/logout` - Logout current session
+* POST `/api/auth/logout-all` - Logout from all devices
+* POST `/api/auth/otp/resend` - Resend OTP
+* POST `/api/auth/password/forgot` - Request password reset
+* POST `/api/auth/password/reset/:resetToken` - Reset password
+* POST `/api/auth/password/change` - Change password while authenticated
+* GET `/api/auth/me` - Get current authenticated user info
+* GET `/api/auth/sessions` - List active user sessions
+* POST `/api/auth/google` - Google OAuth login/signup
 
 ### Classes
 
-* GET `/api/classes` - Get all classes for authenticated user
-* POST `/api/classes` - Create a new class (Teacher only)
+* GET `/api/classes` - Get classes for authenticated user
+* POST `/api/classes` - Create a class (Teacher only)
 * POST `/api/classes/enroll` - Enroll in a class (Student only)
 * GET `/api/classes/:classId` - Get class details
-* GET `/api/classes/:classId/assignments` - Get all assignments for a class
+* GET `/api/classes/:classId/assignments` - Get assignments for a class
 * GET `/api/classes/:classId/performance` - Get class performance (Teacher only)
 
 ### Assignments
 
-* POST `/api/assignments` - Create a new assignment (Teacher only)
+* POST `/api/assignments` - Create an assignment (Teacher only)
 * POST `/api/assignments/:assignmentId/submissions` - Submit an assignment (Student only)
-* GET `/api/assignments/:assignmentId/submissions` - Get all submissions (Teacher only)
+* GET `/api/assignments/:assignmentId/submissions` - Get submissions for an assignment (Teacher only)
 * PATCH `/api/assignments/:assignmentId/submissions/:submissionId` - Grade a submission (Teacher only)
 
 ### Users
@@ -184,45 +245,49 @@ student-performance-tracker/
 
 ---
 
-## 💡 Key Highlights
-
-* Designed a scalable backend with proper separation of concerns
-* Implemented role-based authorization middleware
-* Optimized database queries (avoided N+1 query problem)
-* Built real-world workflows (assignment → submission → grading → analytics)
-* Clean and modular code structure
-
----
-
-## 🧪 How to Run Locally
+## 🧪 Running Locally
 
 ### Backend
 
-```
-cd server
+```bash
+cd backend
 npm install
 npm run dev
 ```
 
 ### Frontend
 
-```
-cd client
+```bash
+cd frontend
 npm install
 npm run dev
 ```
 
 ---
 
-## 🔮 Future Improvements
+## 🧪 Backend Environment Variables
 
-* 📚 Quiz system with scoring
-* 🤖 AI-based performance insights (weak topics detection)
-* 📊 Charts & visual analytics dashboard
-* 📎 File upload for assignments (PDF/Image)
-* 🏆 Activity & extracurricular tracking
-* 🔔 Notifications system
-* 👨‍🏫 Teacher dashboard with deeper analytics
+Create a `.env` file in `backend/` with the following variables:
+
+* `MONGO_URL` - MongoDB connection string
+* `PORT` - Backend server port (optional, default: `3000`)
+* `ACCESS_TOKEN_SECRET` - JWT secret for access tokens
+* `REFRESH_TOKEN_SECRET` - JWT secret for refresh tokens
+* `GOOGLE_USER` - Google service account email or OAuth user email
+* `GOOGLE_CLIENT_ID` - Google OAuth client ID
+* `GOOGLE_CLIENT_SECRET` - Google OAuth client secret
+* `GOOGLE_REFRESH_TOKEN` - Google refresh token for email sending
+* `CLIENT_URL` - Frontend URL allowed by CORS
+* `NODE_ENV` - Environment mode (`development` or `production`, optional)
+
+---
+
+## 💡 Notes
+
+* Backend `server.js` enables CORS with credentials so refresh-token cookies work.
+* Frontend `AuthContext.jsx` attempts token refresh on app load.
+* `tokenManager.js` keeps the access token in memory and clears it on logout.
+* The app separates teacher and student access using role middleware.
 
 ---
 
@@ -234,6 +299,5 @@ Built by Aditi Sharma
 
 ## ⭐ Final Note
 
-This project demonstrates real-world full-stack development concepts including authentication, authorization, database design, and performance analytics.
+This project demonstrates JWT refresh-token authentication, role-based authorization, session-backed user flows, and classroom assignment analytics.
 
----

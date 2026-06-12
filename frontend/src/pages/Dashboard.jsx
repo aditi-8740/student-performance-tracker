@@ -8,9 +8,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import StudentView from "@/components/dashboard/StudentView";
 import TeacherView from "@/components/dashboard/TeacherView";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
@@ -20,7 +21,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const role = localStorage.getItem("role");
+  const { user } = useAuth();
+  const role = user?.role;
 
   //Fetch Classes (for teacher)
   useEffect(() => {
@@ -28,7 +30,6 @@ export default function Dashboard() {
       try {
         const res = await API.get("/classes");
         setClasses(res.data);
-        
       } catch (error) {
         console.error(error);
       }
@@ -60,39 +61,42 @@ export default function Dashboard() {
     fetchData();
   }, [selectedClass, role]);
 
-  if (loading) return <p className="p-4">Loading...</p>;
-  if (error) return <p className="p-4 text-red-500">Error loading data</p>;
-
   return (
     <>
       <div className="p-3 md:p-4 space-y-6">
+        {loading ? (
+          <div className="flex justify-center p-10 ">Loading...</div>
+        ) : error ? (
+          <p className="p-4 text-red-500">Error loading data</p>
+        ) : (
+          <>
+            {/*  Class Selector (only teacher) */}
+            {role === "teacher" && (
+              <div className="max-w-xs">
+                <Select onValueChange={setSelectedClass} value={selectedClass}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Class" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {classes.map((cls) => (
+                      <SelectItem key={cls._id} value={cls._id}>
+                        {cls.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
-        {/*  Class Selector (only teacher) */}
-        {role === "teacher" && (
-          <div className="max-w-xs">
-            <Select onValueChange={setSelectedClass} value={selectedClass} > 
-              <SelectTrigger>
-                <SelectValue placeholder="Select Class" />
-              </SelectTrigger>
-              <SelectContent>
-                {classes.map((cls) => (
-                  <SelectItem key={cls._id} value={cls._id} >
-                    {cls.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+            {/* Views */}
+            {role === "student" && data && <StudentView data={data} />}
 
-        {/* Views */}
-        {role === "student" && data && <StudentView data={data} />}
-
-        {role === "teacher" && data && selectedClass && (
-          <TeacherView data={data} />
+            {role === "teacher" && data && selectedClass && (
+              <TeacherView data={data} />
+            )}
+          </>
         )}
       </div>
-
     </>
   );
 }

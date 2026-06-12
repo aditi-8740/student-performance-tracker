@@ -12,7 +12,7 @@ const authorizeStudent = (req,res,next)=>{
     next();
 }
 
-module.exports = {
+export {
     authorizeTeacher,
     authorizeStudent
 };

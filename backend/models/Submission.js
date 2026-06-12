@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const submissionSchema = mongoose.Schema({
     assignmentId :{
@@ -22,4 +22,4 @@ const submissionSchema = mongoose.Schema({
 },{ timestamps: true })
 
 
-module.exports = mongoose.model('Submission',submissionSchema);
+export default mongoose.model('Submission',submissionSchema);

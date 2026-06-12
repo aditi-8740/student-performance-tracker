@@ -11,7 +11,7 @@ import {
 export default function StudentView({ data }) {
   return (
     <div>
-      <h1 className="text-2xl font-semibold">My Performance</h1>
+      <h1 className="text-2xl  my-6 font-semibold">My Performance</h1>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:h-30">
         <Card>

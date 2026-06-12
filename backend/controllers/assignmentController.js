@@ -1,6 +1,6 @@
-const Assignment = require("../models/Assignment");
-const Class = require("../models/Class");
-const Submission = require("../models/Submission");
+import Assignment from '../models/Assignment.js';
+import Class from '../models/Class.js';
+import Submission from '../models/Submission.js';
 
 const createAssignment = async (req, res) => {
   try {
@@ -121,7 +121,7 @@ const gradeAssignment = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
   createAssignment,
   submitAssignment,
   getSubmissions,

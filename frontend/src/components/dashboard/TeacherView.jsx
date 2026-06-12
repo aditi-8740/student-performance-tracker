@@ -22,7 +22,7 @@ export default function TeacherView({ data }) {
 
     <>
 
-      <h1 className="text-2xl font-semibold">Class Analytics</h1>
+      <h1 className="text-2xl my-6 font-semibold">Class Analytics</h1>
 
       {/* Class Average */}
       <Card className="max-w-sm">

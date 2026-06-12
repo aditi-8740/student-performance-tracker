@@ -4,6 +4,7 @@ import API from "../api/axios";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ClassDetail() {
   const { classId } = useParams();
@@ -11,7 +12,9 @@ export default function ClassDetail() {
   const [classData, setClassData] = useState(null);
   const [assignments, setAssignments] = useState([]);
   const [submissions, setSubmissions] = useState([]);
-  const role = localStorage.getItem("role");
+  const { user } = useAuth();
+  const role = user?.role;
+  console.log(role);
 
   const handleCreateAssignment = async () => {
     const title = prompt("Enter title");
@@ -42,7 +45,6 @@ export default function ClassDetail() {
 
     try {
       await API.post(`/assignments/${assignmentId}/submissions`, {
-        
         answer,
       });
 
@@ -55,7 +57,8 @@ export default function ClassDetail() {
   const fetchSubmissions = async (assignmentId) => {
     try {
       const res = await API.get(`/assignments/${assignmentId}/submissions`);
-      setSubmissions(res.data); console.log(res)
+      setSubmissions(res.data);
+      console.log(res);
     } catch (err) {
       console.error(err);
     }
@@ -67,9 +70,12 @@ export default function ClassDetail() {
     if (!marks) return;
 
     try {
-      await API.patch(`/assignments/${assignmentId}/submissions/${submissionId}`, {       
-        marks
-      });
+      await API.patch(
+        `/assignments/${assignmentId}/submissions/${submissionId}`,
+        {
+          marks,
+        },
+      );
 
       alert("Graded");
     } catch (err) {
@@ -95,7 +101,7 @@ export default function ClassDetail() {
     fetchData();
   }, [classId]);
 
-  if (!classData) return <p className="p-4">Loading</p>;
+  if (!classData) return <p className="p-4">Loading...</p>;
 
   return (
     <div className="p-4 space-y-6">

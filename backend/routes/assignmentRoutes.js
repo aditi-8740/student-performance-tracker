@@ -1,13 +1,13 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const {authorizeTeacher, authorizeStudent} = require('../middleware/roleMiddleware');
-const {protect} = require('../middleware/authMiddleware');
-const {
+import { authorizeTeacher, authorizeStudent } from '../middleware/roleMiddleware.js';
+import { protect } from '../middleware/authMiddleware.js';
+import {
     createAssignment,
     submitAssignment,
     getSubmissions,
     gradeAssignment
-} = require('../controllers/assignmentController')
+} from '../controllers/assignmentController.js'
 
 /**
  * @resource Assignments
@@ -43,4 +43,4 @@ router.get('/:assignmentId/submissions', protect, authorizeTeacher, getSubmissio
 */
 router.patch("/:assignmentId/submissions/:submissionId", protect, authorizeTeacher, gradeAssignment);
 
-module.exports = router;
+export default router;

@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
-const { authorizeStudent, authorizeTeacher } = require('../middleware/roleMiddleware');
-const { getStudentPerformance } = require('../controllers/userController');
+import { protect } from '../middleware/authMiddleware.js';
+import { authorizeStudent, authorizeTeacher } from '../middleware/roleMiddleware.js';
+import { getStudentPerformance } from '../controllers/userController.js';
 
 /**
  * @resource Users
@@ -16,4 +16,4 @@ const { getStudentPerformance } = require('../controllers/userController');
 */   //Get all submissions
 router.get('/performance', protect, authorizeStudent, getStudentPerformance);
 
-module.exports = router;
+export default router;

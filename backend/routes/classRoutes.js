@@ -1,15 +1,15 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { authorizeTeacher, authorizeStudent } = require('../middleware/roleMiddleware');
-const { protect } = require('../middleware/authMiddleware');
-const {
+import { authorizeTeacher, authorizeStudent } from '../middleware/roleMiddleware.js';
+import { protect } from '../middleware/authMiddleware.js';
+import {
     createClass,
     joinClass,
     getClasses,
     getClassDetails,
     getClassAssignmentDetails,
     getClassPerformance
-} = require('../controllers/classController');
+} from '../controllers/classController.js';
 
 /**
  * @resource Classes
@@ -31,7 +31,7 @@ router.get('/', protect, getClasses);
 router.post('/', protect, authorizeTeacher, createClass);
 
 /* 
-@route GET /api/classes
+@route POST /api/classes/enroll
 @desc join a class
 @access Private (Student Only)
 */
@@ -58,4 +58,4 @@ router.get('/:classId/assignments', protect, getClassAssignmentDetails);
 */
 router.get('/:classId/performance', protect , authorizeTeacher , getClassPerformance )
 
-module.exports = router;
+export default router;
