@@ -17,19 +17,23 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 import tokenManager from "@/services/tokenManager.js";
 import { GoogleLogin } from "@react-oauth/google";
+import { Spinner } from "@/components/ui/spinner";
 
 function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const { setAccessToken, setUser } = useAuth();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+
     try {
+      setLoading(true);
       const res = await API.post("/auth/login", form);
 
       setAccessToken(res.data.accessToken);
@@ -39,6 +43,8 @@ function Login() {
       navigate("/app/classes");
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,29 +52,39 @@ function Login() {
     try {
       const idToken = credentialResponse.credential;
 
+      setLoading(true);
       const res = await API.post("/auth/google", {
         idToken,
       });
 
       setAccessToken(res.data.accessToken);
-
       tokenManager.setAccessToken(res.data.accessToken);
 
       setUser(res.data.user);
 
       navigate("/app/classes");
     } catch (error) {
-      console.error("Google login failed");
+      toast.error("Google login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleLoginError = () => {
-    console.error("Google Login Failed");
     toast.error("Google login failed");
   };
 
   return (
     <>
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/10 backdrop-blur-xs">
+          <div className="flex flex-col items-center gap-4">
+            <Spinner className="size-10" />
+            <p className="text-sm text-muted-foreground">Signing you in...</p>
+          </div>
+        </div>
+      )}
+
       <Toaster position="top-center" />
       <div className="flex items-center justify-center min-h-screen">
         <Card className="w-full max-w-sm md:max-w-md lg:max-w-lg px-2 py-8 md:p-8 lg:p-10 mx-4">
@@ -81,7 +97,7 @@ function Login() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleLogin}>
               <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
                   <Label htmlFor="email">Email</Label>
@@ -99,7 +115,7 @@ function Login() {
                 <div className="grid gap-2">
                   <div className="flex items-center">
                     <Label htmlFor="password">Password</Label>
-                    <span className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
+                    <span className="ml-auto inline-block text-sm underline-offset-4 hover:underline hover:cursor-pointer">
                       <Link to="/forgot-password">Forgot your password?</Link>
                     </span>
                   </div>
@@ -115,7 +131,7 @@ function Login() {
                 </div>
                 <Button
                   type="submit"
-                  className="w-full cursor-pointer hover:bg-primary/90"
+                  className="w-full hover:cursor-pointer hover:bg-primary/90"
                 >
                   Login
                 </Button>
@@ -126,7 +142,6 @@ function Login() {
               onSuccess={handleLoginSuccess}
               onError={handleLoginError}
             />
-            
           </CardContent>
           <CardFooter className="flex-col gap-2">
             <div>

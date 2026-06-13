@@ -80,6 +80,7 @@ const getClasses = async (req, res) => {
       classes = await Class.find({
         teacher: req.user._id,
       }).select("_id title subject joinCode");
+      
     } else {
       classes = await Class.find({
         students: req.user._id,

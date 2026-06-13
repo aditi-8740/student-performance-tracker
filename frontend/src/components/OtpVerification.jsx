@@ -18,10 +18,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "./ui/spinner";
+import { toast, Toaster } from "sonner";
+import { useAuth } from "@/context/AuthContext";
+import tokenManager from "@/services/tokenManager";
 
 export default function OtpVerification({ email, onChangeEmail }) {
   const [otpValue, setOtpValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { setAccessToken, setUser } = useAuth();
   const navigate = useNavigate();
   const OTP_SLOT_CLASS =
     "border-2 border-gray-300 rounded-lg md:w-10 md:h-10 text-center text-lg md:text-2xl font-semibold";
@@ -31,13 +36,18 @@ export default function OtpVerification({ email, onChangeEmail }) {
     setIsLoading(true);
 
     try {
-      await API.post("/auth/verifications", {
+      const res = await API.post("/auth/verifications", {
         email,
         otp: otpValue,
       });
-      navigate("/");
+
+      setAccessToken(res.data.accessToken);
+      tokenManager.setAccessToken(res.data.accessToken);
+      setUser(res.data.user);
+
+      navigate("/app/classes");
     } catch (error) {
-      alert("Otp verification failed");
+      toast(error.response?.data?.message || "Otp verification failed");
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +58,7 @@ export default function OtpVerification({ email, onChangeEmail }) {
     setOtpValue("");
     try {
       await API.post("/auth/otp/resend", { email });
-      alert("OTP resent successfully");
+      toast("OTP resent successfully");
     } catch (error) {
       alert("Failed to resend OTP");
     } finally {
@@ -58,6 +68,7 @@ export default function OtpVerification({ email, onChangeEmail }) {
 
   return (
     <>
+      <Toaster position="top-center" />
       <Card className="w-full max-w-sm md:max-w-md lg:max-w-lg px-2 py-8 md:p-8 lg:p-10 mx-4">
         <CardHeader>
           <CardTitle className="text-2xl text-center">
@@ -95,16 +106,17 @@ export default function OtpVerification({ email, onChangeEmail }) {
                 className="w-full hover:cursor-pointer"
                 disabled={isLoading || otpValue.length !== 6}
               >
-                Verify OTP
+                {isLoading && <Spinner />}
+                {isLoading ? "Verifying OTP..." : "Verify OTP"}
               </Button>
             </div>
           </form>
           <div className="mt-2 w-full flex items-center justify-center">
             <div className="flex items-center gap-1 text-center">
               <span>Didn't receive a code? </span>
-              <span 
-              className="ml-auto inline-block text-sm underline-offset-4 underline hover:cursor-pointer hover:text-primary"
-              onClick={() => handleResendOtp()}
+              <span
+                className="ml-auto inline-block text-sm underline-offset-4 underline hover:cursor-pointer hover:text-primary"
+                onClick={() => handleResendOtp()}
               >
                 Resend
               </span>

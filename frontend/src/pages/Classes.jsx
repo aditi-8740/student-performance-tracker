@@ -95,7 +95,7 @@ export default function Classes() {
       {/* Class Cards */}
 
       {loading ? (
-        <div className="flexjustify-center p-10 ">Loading...</div>
+        <div className="flex justify-center p-10 ">Loading...</div>
       ) : (
         (classes.length === 0 ? (
           <div className="flex flex-col items-center py-10">

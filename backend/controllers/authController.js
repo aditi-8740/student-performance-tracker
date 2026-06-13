@@ -148,7 +148,7 @@ export const verifySignupOtp = async (req, res) => {
     return res.status(404).json({ message: "OTP expired" });
   }
 
-  if (hashOTP(otp) !== otpDoc.otpHash) {
+  if (hashOTP(otp) !== otpDoc.otpHash) { 
     otpDoc.attempts += 1;
     otpDoc.save();
     return res.status(400).json({ message: "Invalid OTP" });
@@ -161,7 +161,35 @@ export const verifySignupOtp = async (req, res) => {
     purpose: "signup",
   });
 
-  res.json({ message: "Email verified successfully." });
+  const accessToken = generateAccessToken({
+    userId: user._id,
+    role: user.role,
+  });
+
+  const refreshToken = generateRefreshToken({
+    userId: user._id,
+  });
+
+  await Session.create({
+    userId: user._id,
+    refreshTokenHash: hashToken(refreshToken),
+    userAgent: req.headers["user-agent"],
+    ipAddress: req.ip,
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), //7 days
+  });
+
+  res.cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS);
+
+  res.status(200).json({
+    accessToken,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  });
+
 };
 
 export const login = async (req, res, next) => {
@@ -180,16 +208,14 @@ export const login = async (req, res, next) => {
     }
 
     if (!user.passwordHash) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "This account was created using Google.Please continue with Google Sign-In.",
-        });
+      return res.status(400).json({
+        message:
+          "This account was created using Google.Please continue with Google Sign-In.",
+      });
     }
     // if credentials true or not
     const isMatch = await bcrypt.compare(password, user.passwordHash);
-    
+
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid username or password" });
     }
@@ -211,7 +237,7 @@ export const login = async (req, res, next) => {
     });
 
     res.cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS);
-    
+
     res.json({
       message: "Login successful.",
       accessToken,

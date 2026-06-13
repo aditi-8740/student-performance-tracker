@@ -92,7 +92,7 @@ export default function ForgotPassword() {
                   />
                 </div>
 
-                <Button type="submit" className="w-full cursor-pointer">
+                <Button type="submit" className="w-full cursor-pointer hover:bg-primary/90">
                   Find Account
                 </Button>
               </div>

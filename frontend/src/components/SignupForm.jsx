@@ -24,6 +24,8 @@ import {
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "@/context/AuthContext";
 import tokenManager from "@/services/tokenManager";
+import { Spinner } from "@/components/ui/spinner"
+import { toast, Toaster } from "sonner";
 
 export default function SignupForm({ onSignupSuccess }) {
   const [form, setForm] = useState({
@@ -33,6 +35,7 @@ export default function SignupForm({ onSignupSuccess }) {
     role: "student",
   });
   const { setAccessToken, setUser } = useAuth();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   
   const handleChange = (e) => {
@@ -46,10 +49,14 @@ export default function SignupForm({ onSignupSuccess }) {
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      await API.post("/auth/signup", form);
+      setLoading(true);
+    await API.post("/auth/signup", form);
       onSignupSuccess(form.email);
+
     } catch (err) {
-      alert("Signup failed");
+      toast.error( err.response?.data?.message || "Signup failed");
+    } finally{
+      setLoading(false);
     }
   };
 
@@ -69,17 +76,17 @@ export default function SignupForm({ onSignupSuccess }) {
 
       navigate("/app/classes");
     } catch (error) {
-      console.error("Google login failed");
+      toast.error("Google login failed");
     }
   };
 
   const handleLoginError = () => {
-    console.error("Google Login Failed");
     toast.error("Google login failed");
   };
 
   return (
     <>
+    <Toaster position="top-center" />
       <Card className="w-full max-w-sm md:max-w-md lg:max-w-lg px-2 py-8 md:p-8 lg:p-10 mx-4">
         <CardHeader>
           <CardTitle className="text-2xl text-center">
@@ -101,6 +108,7 @@ export default function SignupForm({ onSignupSuccess }) {
                   placeholder="name"
                   required
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
               <div className="grid gap-2">
@@ -113,6 +121,7 @@ export default function SignupForm({ onSignupSuccess }) {
                   autoComplete="email"
                   required
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
               <div className="grid gap-2">
@@ -128,12 +137,13 @@ export default function SignupForm({ onSignupSuccess }) {
                   type="password"
                   required
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="role">Role</Label>
 
-                <Select value={form.role} onValueChange={handleRoleChange}>
+                <Select value={form.role} onValueChange={handleRoleChange} disabled={loading}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select the role" />
                   </SelectTrigger>
@@ -146,8 +156,12 @@ export default function SignupForm({ onSignupSuccess }) {
                   </SelectContent>
                 </Select>
               </div>
-              <Button type="submit" className="w-full hover:cursor-pointer hover:bg-primary/90">
-                Signup
+              <Button type="submit" 
+              className="w-full hover:cursor-pointer hover:bg-primary/90"
+              disabled={loading}
+              >
+                {loading && <Spinner />}
+                {loading ? "Signing Up..." : "Signup" }
               </Button>
               <div className="text-center -mt-3 mb-3">or</div>
             </div>
