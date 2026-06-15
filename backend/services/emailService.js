@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 
   host: config.BREVO_SMTP_HOST,
   port: config.BREVO_SMTP_PORT,
-  secure: false, // use STARTTLS (upgrade connection to TLS after connecting)
+  secure: true,
   auth: {
     user: config.BREVO_SMTP_LOGIN,
     pass: config.BREVO_SMTP_PASSWORD,
@@ -24,6 +24,8 @@ transporter.verify((error, success) => {
   if (error) {
     console.error("Error setting up email transporter:", error);
   } else {
+    console.log(typeof config.BREVO_SMTP_PORT);
+console.log(config.BREVO_SMTP_PORT);
     console.log("BREVO SMTP is ready to send messages");
   }
 });
@@ -31,11 +33,11 @@ transporter.verify((error, success) => {
 const sendEmail = async ({ to, subject, text, html }) => {
   try {
     const info = await transporter.sendMail({
-      from: `"smart school Team" <${config.GOOGLE_USER}>`, // sender address
-      to: to, // list of recipients
-      subject: subject, // subject line
-      text: text, // plain text body
-      html: html, // HTML body
+      from: `"smart school Team" <${config.GOOGLE_USER}>`,
+      to: to,
+      subject: subject,
+      text: text,
+      html: html,
     });
 
     console.log("Message sent: %s", info.messageId);

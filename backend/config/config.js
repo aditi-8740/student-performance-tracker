@@ -6,7 +6,8 @@ if (
   !process.env.ACCESS_TOKEN_SECRET ||
   !process.env.REFRESH_TOKEN_SECRET ||
   !process.env.GOOGLE_USER ||
-  !process.env.CLIENT_URL
+  !process.env.CLIENT_URL||
+  !process.env.BREVO_API_KEY
 ) {
   console.error(
     "Missing required environment variables. Please check your .env file.",
@@ -30,5 +31,6 @@ const config = {
   BREVO_SMTP_PORT: process.env.BREVO_SMTP_PORT,
   BREVO_SMTP_LOGIN: process.env.BREVO_SMTP_LOGIN,
   BREVO_SMTP_PASSWORD: process.env.BREVO_SMTP_PASSWORD,
+  BREVO_API_KEY: process.env.BREVO_API_KEY,
 };
 export default config;

@@ -127,3 +127,6 @@ export default function OtpVerification({ email, onChangeEmail }) {
     </>
   );
 }
+//Send again in 44 seconds  //send again
+//successfully logged in to
+//redirecting to..
