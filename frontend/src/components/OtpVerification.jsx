@@ -1,7 +1,7 @@
 // src/features/auth/components/OtpVerification.jsx
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { Field, FieldLabel } from "../components/ui/field";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import API from "../api/axios";
 import { useNavigate, Link } from "react-router-dom";
 import {
@@ -22,20 +22,38 @@ import { Spinner } from "./ui/spinner";
 import { toast, Toaster } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import tokenManager from "@/services/tokenManager";
+import AuthOverlay from "./AuthOverlay";
 
 export default function OtpVerification({ email, onChangeEmail }) {
   const [otpValue, setOtpValue] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(60);
   const { setAccessToken, setUser } = useAuth();
   const navigate = useNavigate();
   const OTP_SLOT_CLASS =
     "border-2 border-gray-300 rounded-lg md:w-10 md:h-10 text-center text-lg md:text-2xl font-semibold";
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setResendCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
   const handleOtpVerification = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
 
     try {
+      setIsVerifying(true);
       const res = await API.post("/auth/verifications", {
         email,
         otp: otpValue,
@@ -47,28 +65,47 @@ export default function OtpVerification({ email, onChangeEmail }) {
 
       navigate("/app/classes");
     } catch (error) {
-      toast(error.response?.data?.message || "Otp verification failed");
+      setOtpValue("");
+      toast.error(error.response?.data?.message || "Otp verification failed");
     } finally {
-      setIsLoading(false);
+      setIsVerifying(false);
     }
   };
 
   const handleResendOtp = async () => {
-    setIsLoading(true);
-    setOtpValue("");
+    if (resendCountdown > 0) return;
+
     try {
+      setOtpValue("");
       await API.post("/auth/otp/resend", { email });
-      toast("OTP resent successfully");
+
+      setResendCountdown(60);
+
+      const interval = setInterval(() => {
+        setResendCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     } catch (error) {
-      alert("Failed to resend OTP");
-    } finally {
-      setIsLoading(false);
+      toast.error("Failed to resend OTP");
     }
   };
 
   return (
     <>
       <Toaster position="top-center" />
+      {isVerifying && (
+        <AuthOverlay
+          type="loading"
+          title="Signing you in..."
+          description="Please wait..."
+        />
+      )}
+
       <Card className="w-full max-w-sm md:max-w-md lg:max-w-lg px-2 py-8 md:p-8 lg:p-10 mx-4">
         <CardHeader>
           <CardTitle className="text-2xl text-center">
@@ -104,10 +141,10 @@ export default function OtpVerification({ email, onChangeEmail }) {
               <Button
                 type="submit"
                 className="w-full hover:cursor-pointer"
-                disabled={isLoading || otpValue.length !== 6}
+                disabled={isVerifying || otpValue.length !== 6}
               >
-                {isLoading && <Spinner />}
-                {isLoading ? "Verifying OTP..." : "Verify OTP"}
+                {isVerifying && <Spinner />}
+                {isVerifying ? "Verifying..." : "Verify & Continue"}
               </Button>
             </div>
           </form>
@@ -115,10 +152,12 @@ export default function OtpVerification({ email, onChangeEmail }) {
             <div className="flex items-center gap-1 text-center">
               <span>Didn't receive a code? </span>
               <span
-                className="ml-auto inline-block text-sm underline-offset-4 underline hover:cursor-pointer hover:text-primary"
+                className="ml-auto inline-block text-sm underline-offset-4 underline cursor-pointer hover:text-primary"
                 onClick={() => handleResendOtp()}
               >
-                Resend
+                {resendCountdown > 0
+                  ? `Send again in ${resendCountdown} seconds`
+                  : "Send again"}
               </span>
             </div>
           </div>
@@ -127,6 +166,8 @@ export default function OtpVerification({ email, onChangeEmail }) {
     </>
   );
 }
-//Send again in 44 seconds  //send again
+//Didnot receive the code? (Send again in 44 seconds ) => (send again)
 //successfully logged in to
 //redirecting to..
+// Incorrect OTP. Please check the OTP and re-enter
+// Success logged into smart school

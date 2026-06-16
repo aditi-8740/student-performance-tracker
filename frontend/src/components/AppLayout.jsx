@@ -23,7 +23,7 @@ import { toast, Toaster } from "sonner"
 
 export default function AppLayout() {
   const navigate = useNavigate();
-
+  const {user} = useAuth();
   const handleLogout = async () => {
     try {
       await API.post("/auth/logout");
@@ -58,11 +58,17 @@ export default function AppLayout() {
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent
-                  className="w-65 cursor-pointer"
+                  className="w-65"
                   align="end"
                 >
                   <DropdownMenuGroup>
-                    <DropdownMenuLabel className="cursor-pointer pt-3 px-4 font-bold text-sm">My Account</DropdownMenuLabel>
+                    <DropdownMenuLabel className="pt-3 px-4 font-bold ">{user.name}</DropdownMenuLabel>
+                    <DropdownMenuLabel className="-mt-3 px-4  text-sm">{user.email}</DropdownMenuLabel>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel className="pt-3 px-4 font text-sm">My Account</DropdownMenuLabel>
                     <DropdownMenuItem className="cursor-pointer py-2 px-4" onClick={() => navigate("/app/dashboard")}>
                       Profile
                     </DropdownMenuItem>

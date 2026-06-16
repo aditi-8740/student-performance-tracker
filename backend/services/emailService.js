@@ -11,7 +11,7 @@ const sendEmail = async ({ to, subject, text, html }) => {
       subject: subject,
       textContent: text,
       htmlContent: html,
-      sender: { name: "Sender", email: config.GOOGLE_USER },
+      sender: { name: "Smart School", email: config.GOOGLE_USER },
       to: [{ email: to }],
     });
     console.log("email sent successfully");
@@ -38,7 +38,7 @@ export default sendEmail;
 
 //   host: config.BREVO_SMTP_HOST,
 //   port: config.BREVO_SMTP_PORT,
-//   secure: true,
+//   secure: false,
 //   auth: {
 //     user: config.BREVO_SMTP_LOGIN,
 //     pass: config.BREVO_SMTP_PASSWORD,

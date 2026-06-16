@@ -18,11 +18,13 @@ import { useAuth } from "@/context/AuthContext";
 import tokenManager from "@/services/tokenManager.js";
 import { GoogleLogin } from "@react-oauth/google";
 import { Spinner } from "@/components/ui/spinner";
+import AuthOverlay from "@/components/AuthOverlay";
 
 function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
-  const { setAccessToken, setUser } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const {setAccessToken, setUser } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -33,18 +35,20 @@ function Login() {
     e.preventDefault();
 
     try {
-      setLoading(true);
+      setIsLoading(true);
       const res = await API.post("/auth/login", form);
 
       setAccessToken(res.data.accessToken);
       tokenManager.setAccessToken(res.data.accessToken);
       setUser(res.data.user);
 
+      setIsLoading(false);  
+
       navigate("/app/classes");
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -52,21 +56,20 @@ function Login() {
     try {
       const idToken = credentialResponse.credential;
 
-      setLoading(true);
+      setIsGoogleLoading(true);
       const res = await API.post("/auth/google", {
         idToken,
       });
 
       setAccessToken(res.data.accessToken);
       tokenManager.setAccessToken(res.data.accessToken);
-
       setUser(res.data.user);
 
       navigate("/app/classes");
     } catch (error) {
       toast.error("Google login failed");
     } finally {
-      setLoading(false);
+      setIsGoogleLoading(false);
     }
   };
 
@@ -76,13 +79,12 @@ function Login() {
 
   return (
     <>
-      {loading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/10 backdrop-blur-xs">
-          <div className="flex flex-col items-center gap-4">
-            <Spinner className="size-10" />
-            <p className="text-sm text-muted-foreground">Signing you in...</p>
-          </div>
-        </div>
+      {isGoogleLoading && (
+        <AuthOverlay
+          type="loading"
+          title="Signing you in..."
+          description="Please wait..."
+        />
       )}
 
       <Toaster position="top-center" />
@@ -132,7 +134,9 @@ function Login() {
                 <Button
                   type="submit"
                   className="w-full hover:cursor-pointer hover:bg-primary/90"
+                  disabled={isLoading}
                 >
+                  {isLoading && <Spinner />}
                   Login
                 </Button>
                 <div className="text-center -mt-3 mb-3">or</div>
