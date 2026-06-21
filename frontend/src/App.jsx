@@ -4,7 +4,7 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Classes from "./pages/Classes";
 import AppLayout from "./components/AppLayout";
-import ClassDetail from "./pages/ClassDetail";
+import ClassPage from "./pages/ClassPage";
 import ResetPassword from "./pages/ResetPassword";
 import ForgotPassword from "./pages/ForgotPassword";
 import { useAuth } from "./context/AuthContext";
@@ -13,6 +13,8 @@ import SecurityPage from "./pages/SecurityPage";
 import ChangePassword from "./pages/ChangePassword";
 import UserSessions from "./pages/UserSessions";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import AssignmentsPage from "./pages/AssignmentsPage";
+import StudentsPage from "./pages/StudentsPage";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -37,38 +39,46 @@ function ProtectedRoute({ children }) {
 function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-    <BrowserRouter>
-      <Routes>
-        {/* Auth */}
-        <Route path="/" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:resetToken" element={<ResetPassword />} />
+      <BrowserRouter>
+        <Routes>
+          {/* Auth */}
+          <Route path="/" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route
+            path="/reset-password/:resetToken"
+            element={<ResetPassword />}
+          />
 
-        {/* App */}
-        <Route
-          path="/app"
-          element={
-            <ProtectedRoute>
-              <AppLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route path="settings/security" element={<SecurityPage />} />
+          {/* App */}
           <Route
-            path="settings/security/change-password"
-            element={<ChangePassword />}
-          />
-          <Route
-            path="settings/security/user-sessions"
-            element={<UserSessions />}
-          />
-          <Route path="classes" element={<Classes />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="classes/:classId" element={<ClassDetail />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+            path="/app"
+            element={
+              <ProtectedRoute>
+                <AppLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="settings/security" element={<SecurityPage />} />
+            <Route
+              path="settings/security/change-password"
+              element={<ChangePassword />}
+            />
+            <Route
+              path="settings/security/user-sessions"
+              element={<UserSessions />}
+            />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="classes" element={<Classes />} />
+
+            <Route path="classes/:classId" element={<ClassPage />}>
+              <Route index element={<Navigate to="assignments" replace />} />
+              <Route path="assignments" element={<AssignmentsPage />} />
+              <Route path="students" element={<StudentsPage />} />
+            </Route>
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </GoogleOAuthProvider>
   );
 }

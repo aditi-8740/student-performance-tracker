@@ -148,7 +148,7 @@ export const verifySignupOtp = async (req, res) => {
     return res.status(404).json({ message: "OTP expired" });
   }
 
-  if (hashOTP(otp) !== otpDoc.otpHash) { 
+  if (hashOTP(otp) !== otpDoc.otpHash) {
     otpDoc.attempts += 1;
     otpDoc.save();
     return res.status(400).json({ message: "Invalid OTP" });
@@ -189,7 +189,6 @@ export const verifySignupOtp = async (req, res) => {
       role: user.role,
     },
   });
-
 };
 
 export const login = async (req, res, next) => {
@@ -372,15 +371,12 @@ export const forgotPassword = async (req, res) => {
 
     const resetLink = `${config.CLIENT_URL}/reset-password/${resetToken}`;
 
-    // send email asynchronously so the HTTP response isn't blocked by SMTP delays (*Change later)
-    // setImmediate(() => {
     sendEmail({
       to: user.email,
       subject: "Reset Password",
       text: `Click the following link to reset your password: ${resetLink}`,
       html: getResetPasswordEmailHtml(resetLink),
     });
-    // });
 
     res.json({
       message: "If the account exists, a reset link sent successfully.",
@@ -566,7 +562,12 @@ export const googleLogin = async (req, res) => {
 
     return res.status(200).json({
       accessToken,
-      user,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     console.error(error);
