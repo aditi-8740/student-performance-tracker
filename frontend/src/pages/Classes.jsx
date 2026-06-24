@@ -205,7 +205,7 @@ export default function Classes() {
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
-              <Button type="submit" className="cursor-pointer">
+              <Button type="submit" className="cursor-pointer" disabled={isClassCreating}>
                 {isClassCreating ? "Creating..." : "Create"}
               </Button>
             </DialogFooter>

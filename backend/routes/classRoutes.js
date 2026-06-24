@@ -8,7 +8,8 @@ import {
     getClasses,
     getClassDetails,
     getClassAssignmentDetails,
-    getClassPerformance
+    getClassPerformance,
+    getStudents
 } from '../controllers/classController.js';
 
 /**
@@ -57,5 +58,7 @@ router.get('/:classId/assignments', protect, getClassAssignmentDetails);
 @access Private (Teacher Only)
 */
 router.get('/:classId/performance', protect , authorizeTeacher , getClassPerformance )
+
+router.get('/:classId/students',protect, getStudents )
 
 export default router;

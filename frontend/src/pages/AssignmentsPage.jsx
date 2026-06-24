@@ -4,44 +4,24 @@ import { useAuth } from "@/context/AuthContext";
 import { Separator } from "@/components/ui/separator";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import CreateAssignmentForm from "@/components/CreateAssignmentForm";
 
 const AssignmentsPage = () => {
   const { classId } = useParams();
   const [assignments, setAssignments] = useState([]);
+  const [isAssignmentFormOpen, setIsAssignmnetFormOpen] = useState(false);
   const { user } = useAuth();
   const role = user?.role;
   console.log(role);
 
-  const handleCreateAssignment = async () => {
-    const title = prompt("Enter title");
-    const description = prompt("Enter description");
-    const dueDate = prompt("Enter due date (YYYY-MM-DD)");
-
-    if (!title) return;
-
-    try {
-      await API.post("/assignments", {
-        title,
-        description,
-        dueDate,
-        classId,
-      });
-
-      alert("Created");
-      window.location.reload(); // simple refresh
-    } catch (err) {
-      alert("Error");
-    }
-  };
-
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAssignments = async () => {
       // get assignments for classId
       const res2 = await API.get(`/classes/${classId}/assignments`);
       setAssignments(res2.data);
     };
 
-    fetchData();
+    fetchAssignments();
   }, [classId]);
 
   return (
@@ -49,15 +29,15 @@ const AssignmentsPage = () => {
       {/* Assignments */}
       {role === "teacher" && (
         <button
-          className="bg-primary rounded-(--radius) text-white px-3 py-1 "
-          onClick={handleCreateAssignment}
+          className="bg-primary rounded-lg text-white px-3 py-1 cursor-pointer hover:bg-primary/90"
+          onClick={()=> setIsAssignmnetFormOpen(true)}
         >
           + Create Assignment
         </button>
       )}
 
       <div>
-        <h2 className="text-2xl">Assignments</h2>
+        <h2 className="text-2xl mb-2">Assignments</h2>
         <Separator />
 
         <div className="grid lg:grid-cols-2 gap-4">
@@ -91,7 +71,7 @@ const AssignmentsPage = () => {
                   )}
                   {role === "teacher" && (
                     <button
-                      className="bg-primary rounded-(--radius) text-white px-3 py-1 "
+                      className="bg-primary rounded-lg text-white px-3 py-1 "
                       onClick={() => fetchSubmissions(a._id)}
                     >
                       View Submissions
@@ -103,6 +83,7 @@ const AssignmentsPage = () => {
           ))}
         </div>
       </div>
+      <CreateAssignmentForm isOpen={isAssignmentFormOpen} isOpenChange={setIsAssignmnetFormOpen} />
     </>
   );
 };

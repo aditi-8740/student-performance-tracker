@@ -4,7 +4,7 @@ import Submission from '../models/Submission.js';
 
 const createAssignment = async (req, res) => {
   try {
-    const { title, description, dueDate, classId } = req.body;
+    const { title, description, dueDate, classId ,marks} = req.body;
     const classData = await Class.findById(classId);
     if (!classData) {
       return res.status(404).json({ message: "class not found" });

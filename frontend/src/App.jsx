@@ -23,7 +23,7 @@ function ProtectedRoute({ children }) {
 
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-amber-400">
+      <div className="min-h-screen flex items-center justify-center">
         Loading...
       </div>
     );

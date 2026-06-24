@@ -172,11 +172,27 @@ const getClassPerformance = async (req,res)=>{
 
 }
 
+const getStudents = async (req,res)=>{
+  const {classId} = req.params;
+  try {
+    const classData = await Class.findById(classId).populate("students","name");
+    
+    if(!classData){
+      res.status(404).json({message: "Class not found"});
+    }
+    return res.status(200).json(classData.students)
+  } catch (error) {
+    res.status(500).json({message: error.message});
+  }
+
+}
+
 export {
   createClass,
   joinClass,
   getClasses,
   getClassDetails,
   getClassAssignmentDetails,
-  getClassPerformance
+  getClassPerformance,
+  getStudents
 };

@@ -1,29 +1,9 @@
-import API from "@/api/axios";
 import { useAuth } from "@/context/AuthContext";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 
-const ClassHeader = () => {
-  const { classId } = useParams();
-  const [classData, setClassData] = useState(null);
+const ClassHeader = ({ classData }) => {
   const { user } = useAuth();
   const role = user?.role;
-  console.log(role);
-
-  useEffect(() => {
-    try {
-      const fetchData = async () => {
-        // get class info for classId
-        const res1 = await API.get(`/classes/${classId}`);
-        setClassData(res1.data);
-      };
-
-      fetchData();
-    } catch (err) {
-      console.error(err);
-    }
-  }, [classId]);
-
   if (!classData) return <p className="p-4">Loading...</p>;
 
   return (
