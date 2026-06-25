@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Upload } from "lucide-react";
-import { Link2 } from 'lucide-react';
+import { Link2 } from "lucide-react";
 import { Input } from "./ui/input";
 import { Spinner } from "./ui/spinner";
 
@@ -22,18 +22,18 @@ const CreateAssignmentForm = ({ isOpen, isOpenChange }) => {
     title: "",
     description: "",
     dueDate: "",
-    marks: null
+    marks: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
-  const [date, setDate] = useState(undefined);
+  // const [date, setDate] = useState(undefined);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   const handleCloseForm = (e) => {
     isOpenChange(false);
-    setFormData({ title: "", description: "", dueDate: "" });
+    setFormData({ title: "", description: "", dueDate: "", marks: "" });
   };
 
   const handleCreateAssignment = async () => {
@@ -41,15 +41,16 @@ const CreateAssignmentForm = ({ isOpen, isOpenChange }) => {
 
     setIsSubmitting(true);
     try {
+      console.log(formData.marks);
       await API.post("/assignments", {
         title: formData.title,
         description: formData.description,
         dueDate: formData.dueDate,
-        marks: formData.marks,
+        marks: Number(formData.marks),
         classId,
       });
 
-      setFormData({ title: "", description: "", dueDate: "" });
+      setFormData({ title: "", description: "", dueDate: "", marks: "" });
       isOpenChange(false);
     } catch (err) {
       alert("Error creating assignment");
@@ -57,6 +58,9 @@ const CreateAssignmentForm = ({ isOpen, isOpenChange }) => {
       setIsSubmitting(false);
     }
   };
+  const selectedDate = formData.dueDate
+    ? new Date(formData.dueDate)
+    : undefined;
 
   return (
     <>
@@ -99,127 +103,109 @@ const CreateAssignmentForm = ({ isOpen, isOpenChange }) => {
           <div className="overflow-y-auto grow px-3 sm:px-5 pb-5 sm:pb-0 min-h-0">
             <div className="flex sm:gap-6 min-h-full flex-col sm:flex-row">
               <div className="sm:w-[73%]">
-              <Label
-                htmlFor="assignment-title"
-                className="text-base pt-6 pb-0.5"
-              >
-                Title
-              </Label>
-              <Textarea
-                id="assignment-title"
-                name="title"
-                className="text-base"
-                required
-                rows={5}
-                value={formData.title}
-                onChange={handleChange}
-              />
-
-              <Label
-                htmlFor="assignment-description"
-                className="text-base pt-6 pb-0.5"
-              >
-                Description (optional)
-              </Label>
-              <Textarea
-                id="assignmnet-description"
-                name="description"
-                className="text-base"
-                rows={7}
-                value={formData.description}
-                onChange={handleChange}
-              />
-            
-              <Label className="text-base pt-6 pb-0.5 ">Attach</Label>
-              <div className=" border p-7 rounded-xl">
-                <div className="flex gap-5 justify-center" >
-
-              <div className="flex justify-center items-center border h-12 w-12 sm:h-17 sm:w-17 rounded-full hover:bg-foreground/5 cursor-pointer">
-                <Upload />
-              </div>
-              <div className="flex justify-center items-center border h-12 w-12 sm:h-17 sm:w-17 rounded-full hover:bg-foreground/5 cursor-pointer">
-                <Link2 />
-              </div>
-                </div>
-              
-            </div>
-            </div>
-            <div className="sm:border-t-0 sm:border-l sm:w-[27%] sm:px-5 sm:py-5 flex flex-col">
-              <Field className="sm:w-44 gap-0.5">
-                <FieldLabel
-                  htmlFor="assignment-dueDate"
+                <Label
+                  htmlFor="assignment-title"
                   className="text-base pt-6 pb-0.5"
                 >
-                  Due Date
-                </FieldLabel>
-                <Popover open={open} onOpenChange={setOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      id="assignment-dueDate"
-                      className="justify-start font-normal px-3 py-5"
-                    >
-                      {date ||
-                      (formData.dueDate ? new Date(formData.dueDate) : null)
-                        ? (
-                            date ||
-                            (formData.dueDate
-                              ? new Date(formData.dueDate)
-                              : null)
-                          ).toLocaleDateString()
-                        : "Select date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    className="w-auto overflow-hidden p-0"
-                    align="start"
-                  >
-                    <Calendar
-                      mode="single"
-                      captionLayout="dropdown"
-                      className="rounded-lg border [--cell-size:--spacing(8)] md:[--cell-size:--spacing(10)]"
-                      selected={
-                        date ||
-                        (formData.dueDate
-                          ? new Date(formData.dueDate)
-                          : undefined)
-                      }
-                      defaultMonth={
-                        date ||
-                        (formData.dueDate
-                          ? new Date(formData.dueDate)
-                          : undefined)
-                      }
-                      onSelect={(selected) => {
-                        setDate(selected);
-                        setFormData((prev) => ({
-                          ...prev,
-                          dueDate: selected ? selected.toISOString() : "",
-                        }));
-                        setOpen(false);
-                      }}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </Field>
+                  Title
+                </Label>
+                <Textarea
+                  id="assignment-title"
+                  name="title"
+                  className="text-base"
+                  required
+                  rows={5}
+                  value={formData.title}
+                  onChange={handleChange}
+                />
 
-              <Label
-                htmlFor="assignment-marks"
-                className="text-base pt-6 pb-0.5"
-              >
-                Marks
-              </Label>
-              <Input
-                id="assignment-marks"
-                name="marks"
-                className="text-base sm:w-44 px-3 py-5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                type="number"
-                value={formData.marks}
-                onChange={(e)=>{ setFormData({...formData, marks : e.target.value}) }}
-              />
+                <Label
+                  htmlFor="assignment-description"
+                  className="text-base pt-6 pb-0.5"
+                >
+                  Description (optional)
+                </Label>
+                <Textarea
+                  id="assignmnet-description"
+                  name="description"
+                  className="text-base"
+                  rows={7}
+                  value={formData.description}
+                  onChange={handleChange}
+                />
+
+                <Label className="text-base pt-6 pb-0.5 ">Attach</Label>
+                <div className=" border p-7 rounded-xl">
+                  <div className="flex gap-5 justify-center">
+                    <div className="flex justify-center items-center border h-12 w-12 sm:h-17 sm:w-17 rounded-full hover:bg-foreground/5 cursor-pointer">
+                      <Upload />
+                    </div>
+                    <div className="flex justify-center items-center border h-12 w-12 sm:h-17 sm:w-17 rounded-full hover:bg-foreground/5 cursor-pointer">
+                      <Link2 />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="sm:border-t-0 sm:border-l sm:w-[27%] sm:px-5 sm:py-5 flex flex-col">
+                <Field className="sm:w-44 gap-0.5">
+                  <FieldLabel
+                    htmlFor="assignment-dueDate"
+                    className="text-base pt-6 pb-0.5"
+                  >
+                    Due Date
+                  </FieldLabel>
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        id="assignment-dueDate"
+                        className="justify-start font-normal px-3 py-5"
+                      >
+                        {selectedDate
+                          ? selectedDate.toLocaleDateString()
+                          : "Select date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto overflow-hidden p-0"
+                      align="start"
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        captionLayout="dropdown"
+                        className="rounded-lg border [--cell-size:--spacing(8)] md:[--cell-size:--spacing(10)]"
+                        defaultMonth={selectedDate}
+                        onSelect={(selected) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            dueDate: selected ? selected.toISOString() : "",
+                          }))
+                        }
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </Field>
+
+                <Label
+                  htmlFor="assignment-marks"
+                  className="text-base pt-6 pb-0.5"
+                >
+                  Marks
+                </Label>
+                <Input
+                  id="assignment-marks"
+                  name="marks"
+                  className="text-base sm:w-44 px-3 py-5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  type="number"
+                  value={formData.marks}
+                  onChange={(e) => {
+                    setFormData({ ...formData, marks: e.target.value });
+                  }}
+                />
+              </div>
             </div>
           </div>
-        </div>
         </div>
       )}
     </>

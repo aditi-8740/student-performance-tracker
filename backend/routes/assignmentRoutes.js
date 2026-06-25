@@ -6,7 +6,8 @@ import {
     createAssignment,
     submitAssignment,
     getSubmissions,
-    gradeAssignment
+    gradeAssignment,
+    getAssignment
 } from '../controllers/assignmentController.js'
 
 /**
@@ -21,6 +22,13 @@ import {
 @access Private (Teacher Only)
 */
 router.post('/', protect, authorizeTeacher , createAssignment);
+
+/* 
+@route GET /api/assignments/:assignmentsId
+@desc Get an assignment
+@access Private
+*/
+router.get('/:assignmentId', protect, getAssignment);
 
 /* 
 @route POST /api/assignments/:id/submissions

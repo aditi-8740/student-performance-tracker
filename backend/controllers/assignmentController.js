@@ -1,10 +1,10 @@
-import Assignment from '../models/Assignment.js';
-import Class from '../models/Class.js';
-import Submission from '../models/Submission.js';
+import Assignment from "../models/Assignment.js";
+import Class from "../models/Class.js";
+import Submission from "../models/Submission.js";
 
 const createAssignment = async (req, res) => {
   try {
-    const { title, description, dueDate, classId ,marks} = req.body;
+    const { title, description, dueDate, classId, marks } = req.body;
     const classData = await Class.findById(classId);
     if (!classData) {
       return res.status(404).json({ message: "class not found" });
@@ -20,6 +20,7 @@ const createAssignment = async (req, res) => {
       dueDate,
       teacher: req.user._id,
       class: classId,
+      marks
     });
 
     return res.status(201).json(createdAssignment);
@@ -27,6 +28,18 @@ const createAssignment = async (req, res) => {
     return res
       .status(500)
       .json({ message: "assignment creation unsuccessful" });
+  }
+};
+
+const getAssignment = async (req, res) => {
+  try {
+    const assignmentId = req.params.assignmentId;
+
+    const assignmentData = await Assignment.findById(assignmentId);
+
+    return res.status(200).json(assignmentData);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -76,54 +89,59 @@ const submitAssignment = async (req, res) => {
   }
 };
 
-const getSubmissions = async(req,res)=>{
-    const assignmentId = req.params.assignmentId;
-    const submissions = await Submission.find({assignmentId})
-    .populate("studentId", "name") ;
+const getSubmissions = async (req, res) => {
+  const assignmentId = req.params.assignmentId;
+  const submissions = await Submission.find({ assignmentId }).populate(
+    "studentId",
+    "name",
+  );
 
-    res.json(submissions);
-}
+  res.json(submissions);
+};
 
 const gradeAssignment = async (req, res) => {
-    try {
-        const { marks } = req.body; 
-        const { submissionId } = req.params;
+  try {
+    const { marks } = req.body;
+    const { submissionId } = req.params;
 
-        // 1. find submission
-        const SubmissionData = await Submission.findById(submissionId);
-        if (!SubmissionData) {
-            return res.status(404).json({ message: "Submission not found" });
-        }
-        
-        // 2. find assignment
-        const assignmentData = await Assignment.findById(SubmissionData.assignmentId);
-        
-        // 3. find class
-        const classData = await Class.findById(assignmentData.class);
-        
-        // 4. Check teacher owns class
-        if (classData.teacher.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ message: "Not your class" });
-        }
-
-        // Basic Marks validation
-        if( marks<0 || marks > 100 ){
-            return res.status(400).json({ message : "Marks must be between 0-100" });
-        }
-
-        // 5. Update marks
-        SubmissionData.marks = marks;
-        await SubmissionData.save();
-
-        res.json({ message: "Graded successfully", SubmissionData });
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
+    // 1. find submission
+    const SubmissionData = await Submission.findById(submissionId);
+    if (!SubmissionData) {
+      return res.status(404).json({ message: "Submission not found" });
     }
+
+    // 2. find assignment
+    const assignmentData = await Assignment.findById(
+      SubmissionData.assignmentId,
+    );
+
+    // 3. find class
+    const classData = await Class.findById(assignmentData.class);
+
+    // 4. Check teacher owns class
+    if (classData.teacher.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not your class" });
+    }
+
+    // Basic Marks validation
+    if (marks < 0 || marks > 100) {
+      return res.status(400).json({ message: "Marks must be between 0-100" });
+    }
+
+    // 5. Update marks
+    SubmissionData.marks = marks;
+    await SubmissionData.save();
+
+    res.json({ message: "Graded successfully", SubmissionData });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 };
 
 export {
   createAssignment,
   submitAssignment,
   getSubmissions,
-  gradeAssignment
+  gradeAssignment,
+  getAssignment,
 };

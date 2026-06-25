@@ -15,6 +15,7 @@ import UserSessions from "./pages/UserSessions";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import AssignmentsPage from "./pages/AssignmentsPage";
 import StudentsPage from "./pages/StudentsPage";
+import SubmissionPage from "./pages/SubmissionPage";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -76,6 +77,8 @@ function App() {
               <Route path="assignments" element={<AssignmentsPage />} />
               <Route path="students" element={<StudentsPage />} />
             </Route>
+
+            <Route path="classes/:classId/assignments/:assignmentId" element={<SubmissionPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

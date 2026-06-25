@@ -20,6 +20,10 @@ const assignmentSchema = new mongoose.Schema({
     },
     dueDate: {
         type: Date,
+    },
+    marks: {
+        type: Number,
+        default: null,
     }
 })
 

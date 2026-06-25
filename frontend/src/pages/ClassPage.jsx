@@ -23,21 +23,6 @@ export default function ClassPage() {
     }
   }, [classId]);
 
-  const handleSubmit = async (assignmentId) => {
-    const answer = prompt("Enter your answer");
-
-    if (!answer) return;
-
-    try {
-      await API.post(`/assignments/${assignmentId}/submissions`, {
-        answer,
-      });
-
-      alert("Submitted");
-    } catch (err) {
-      alert("Error submitting");
-    }
-  };
 
   const fetchSubmissions = async (assignmentId) => {
     try {

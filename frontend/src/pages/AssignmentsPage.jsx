@@ -3,8 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { Separator } from "@/components/ui/separator";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CreateAssignmentForm from "@/components/CreateAssignmentForm";
+import { Button } from "@/components/ui/button";
 
 const AssignmentsPage = () => {
   const { classId } = useParams();
@@ -13,6 +14,7 @@ const AssignmentsPage = () => {
   const { user } = useAuth();
   const role = user?.role;
   console.log(role);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAssignments = async () => {
@@ -30,7 +32,7 @@ const AssignmentsPage = () => {
       {role === "teacher" && (
         <button
           className="bg-primary rounded-lg text-white px-3 py-1 cursor-pointer hover:bg-primary/90"
-          onClick={()=> setIsAssignmnetFormOpen(true)}
+          onClick={() => setIsAssignmnetFormOpen(true)}
         >
           + Create Assignment
         </button>
@@ -57,12 +59,12 @@ const AssignmentsPage = () => {
                     {a.dueDate ? new Date(a.dueDate).toLocaleDateString() : ""}
                   </p>
                   {role === "student" && (
-                    <button
-                      className="bg-primary text-white px-3 py-1 rounded"
-                      onClick={() => handleSubmit(a._id)}
+                    <Button variant="outline"
+                      className=" px-3 py-1 cursor-pointer my-2 hover:text-white hover:bg-primary border-primary transition duration-200 ease-in-out"
+                      onClick={() => navigate(`/app/classes/${classId}/assignments/${a._id}`) }
                     >
                       Submit
-                    </button>
+                    </Button>
                   )}
                   {role === "student" && (
                     <p className="text-sm mt-2">
@@ -70,12 +72,12 @@ const AssignmentsPage = () => {
                     </p>
                   )}
                   {role === "teacher" && (
-                    <button
+                    <Button
                       className="bg-primary rounded-lg text-white px-3 py-1 "
                       onClick={() => fetchSubmissions(a._id)}
                     >
                       View Submissions
-                    </button>
+                    </Button>
                   )}
                 </div>
               </CardContent>
@@ -83,7 +85,10 @@ const AssignmentsPage = () => {
           ))}
         </div>
       </div>
-      <CreateAssignmentForm isOpen={isAssignmentFormOpen} isOpenChange={setIsAssignmnetFormOpen} />
+      <CreateAssignmentForm
+        isOpen={isAssignmentFormOpen}
+        isOpenChange={setIsAssignmnetFormOpen}
+      />
     </>
   );
 };
