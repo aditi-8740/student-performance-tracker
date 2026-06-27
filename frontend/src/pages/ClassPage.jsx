@@ -24,15 +24,7 @@ export default function ClassPage() {
   }, [classId]);
 
 
-  const fetchSubmissions = async (assignmentId) => {
-    try {
-      const res = await API.get(`/assignments/${assignmentId}/submissions`);
-      setSubmissions(res.data);
-      console.log(res);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  
 
   const handleGrade = async (assignmentId, submissionId) => {
     const marks = prompt("Enter marks");

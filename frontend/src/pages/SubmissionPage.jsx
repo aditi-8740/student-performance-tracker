@@ -78,7 +78,7 @@ const SubmissionPage = () => {
         <>
           <div className="space-y-3">
             <div className=" sm:items-center sm:justify-between">
-              <h2 className="text-xl sm:text-2xl text-foreground">
+              <h2 className="text-lg sm:text-2xl text-foreground">
                 {assignmentData?.title}
               </h2>
 
@@ -124,7 +124,7 @@ const SubmissionPage = () => {
             )}
 
             {successMessage && (
-              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700">
+              <div className="rounded-xl bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700">
                 {successMessage}
               </div>
             )}

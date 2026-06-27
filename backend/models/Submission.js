@@ -18,6 +18,11 @@ const submissionSchema = mongoose.Schema({
     marks:{
         type:Number,
         default: null
+    },
+    status: {
+        type: String,
+        enum:["submitted","graded"],
+        default: "submitted"
     }
 },{ timestamps: true })
 

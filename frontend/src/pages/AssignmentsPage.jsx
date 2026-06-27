@@ -13,7 +13,6 @@ const AssignmentsPage = () => {
   const [isAssignmentFormOpen, setIsAssignmnetFormOpen] = useState(false);
   const { user } = useAuth();
   const role = user?.role;
-  console.log(role);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,17 +38,16 @@ const AssignmentsPage = () => {
       )}
 
       <div>
-        <h2 className="text-2xl mb-2">Assignments</h2>
-        <Separator />
+        <h2 className="text-2xl mb-4">Assignments</h2>
 
         <div className="grid lg:grid-cols-2 gap-4">
           {assignments.map((a) => (
             <Card key={a._id}>
-              <CardContent className="p-4 space-y-2 flex flex-col flex-1 justify-between">
+              <CardContent className="flex flex-col sm:p-4 space-y-2 flex-1 justify-between">
                 <div>
-                  <h3 className="font-semibold mb-3">{a.title}</h3>
-                  <Separator />
-                  <p className="my-2">{a.description}</p>
+                  <h3 className="font-semibold mb-2 sm:text-base">{a.title}</h3>
+                  {/* <Separator /> */}
+                  {/* <p className="my-2">{a.description}</p> */}
                 </div>
 
                 <div>
@@ -59,9 +57,12 @@ const AssignmentsPage = () => {
                     {a.dueDate ? new Date(a.dueDate).toLocaleDateString() : ""}
                   </p>
                   {role === "student" && (
-                    <Button variant="outline"
+                    <Button
+                      variant="outline"
                       className=" px-3 py-1 cursor-pointer my-2 hover:text-white hover:bg-primary border-primary transition duration-200 ease-in-out"
-                      onClick={() => navigate(`/app/classes/${classId}/assignments/${a._id}`) }
+                      onClick={() =>
+                        navigate(`/app/classes/${classId}/assignments/${a._id}/submit`)
+                      }
                     >
                       Submit
                     </Button>
@@ -73,8 +74,9 @@ const AssignmentsPage = () => {
                   )}
                   {role === "teacher" && (
                     <Button
-                      className="bg-primary rounded-lg text-white px-3 py-1 "
-                      onClick={() => fetchSubmissions(a._id)}
+                      variant="outline"
+                      className=" px-3 py-1 cursor-pointer my-2 hover:text-white hover:bg-primary border-primary transition duration-200 ease-in-out"
+                      onClick={() => navigate(`/app/classes/${classId}/assignments/${a._id}/submissions`)}
                     >
                       View Submissions
                     </Button>

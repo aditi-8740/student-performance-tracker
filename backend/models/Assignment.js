@@ -25,6 +25,6 @@ const assignmentSchema = new mongoose.Schema({
         type: Number,
         default: null,
     }
-})
+},{timestamps: true})
 
 export default mongoose.model('Assignment', assignmentSchema);
