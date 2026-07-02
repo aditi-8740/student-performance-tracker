@@ -7,50 +7,56 @@ import ClassTabs from "@/components/ClassTabs";
 export default function ClassPage() {
   const { classId } = useParams();
   const [classData, setClassData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [submissions, setSubmissions] = useState([]);
   useEffect(() => {
-    try {
-      const fetchData = async () => {
-        // get class info for classId
-        const res1 = await API.get(`/classes/${classId}`);
-        setClassData(res1.data);
-      };
+    let isMounted = true;
 
-      fetchData();
-    } catch (err) {
-      console.error(err);
-    }
+    const fetchClassData = async () => {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const { data } = await API.get(`/classes/${classId}`);
+
+        if (isMounted) {
+          setClassData(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch class data:", err);
+
+        if (isMounted) {
+          setError("Unable to load class information right now.");
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchClassData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [classId]);
-
-
-  
-
-  const handleGrade = async (assignmentId, submissionId) => {
-    const marks = prompt("Enter marks");
-
-    if (!marks) return;
-
-    try {
-      await API.patch(
-        `/assignments/${assignmentId}/submissions/${submissionId}`,
-        {
-          marks,
-        },
-      );
-
-      alert("Graded");
-    } catch (err) {
-      alert("Error grading");
-    }
-  };
 
   return (
     <div className="px-2 py-3 sm:px-4 sm:py-4 space-y-6">
-      {/* Class Info */}
-      <ClassHeader classData={classData} />
+      {isLoading ? (
+        <div className="text-sm text-muted-foreground">
+          Loading class details...
+        </div>
+      ) : error ? (
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {error}
+        </div>
+      ) : (
+        <ClassHeader classData={classData} />
+      )}
       <ClassTabs classId={classId} />
-
       <Outlet />
     </div>
   );

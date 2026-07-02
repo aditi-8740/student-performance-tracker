@@ -45,7 +45,7 @@ router.post('/:assignmentId/submissions', protect, authorizeStudent , submitAssi
 router.get('/:assignmentId/submissions', protect, authorizeTeacher, getSubmissions );
 
 /*
-@route PATCH /api/assignments/:id/submissions
+@route PATCH /api/assignments/:id/submissions/:submissionId
 @desc Grade a specific assignment
 @access Private (Teacher Only)
 */

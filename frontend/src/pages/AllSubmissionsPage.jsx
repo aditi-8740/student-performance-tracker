@@ -1,7 +1,8 @@
+import API from "@/api/axios";
 import AssignmentTab from "@/components/AssignmentTab";
 import SubmissionTab from "@/components/SubmissionTab";
 import React, { useEffect, useState } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const TABS = [
   { key: "details", label: "Assignment Details" },
@@ -10,6 +11,22 @@ const TABS = [
 
 const AllSubmissionsPage = () => {
   const [activeTab, setActiveTab] = useState("details");
+  const [assignment, setAssignment] = useState(null);
+  const { assignmentId } = useParams();
+
+  useEffect(()=>{
+    const fetchAssignment = async () => {
+      try {
+        const res = await API.get(`/assignments/${assignmentId}`);
+        setAssignment(res.data);
+
+      }catch(error){
+        console.error("Failed to fetch assignment:", error);
+      }
+    }
+    fetchAssignment();
+
+  },[assignmentId]);
 
   return (
     <div className="px-1.5 sm:px-3">
@@ -28,10 +45,9 @@ const AllSubmissionsPage = () => {
 
 
         {/* Tab Content */}
-        {activeTab==="details" && <AssignmentTab />
-        }
+        {activeTab === "details" && <AssignmentTab assignment={assignment} />}
 
-        {activeTab==="submissions" && <SubmissionTab />  }
+        {activeTab === "submissions" && <SubmissionTab totalMarks={assignment?.marks} />}
     </div>
   );
 };

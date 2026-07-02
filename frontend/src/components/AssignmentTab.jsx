@@ -1,29 +1,9 @@
-import API from "@/api/axios";
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React from "react";
 
-const AssignmentTab = () => {
-  const { assignmentId } = useParams();
-  const [assignment, setAssignment] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchAssignment = async () => {
-      try {
-        const res = await API.get(`/assignments/${assignmentId}`);
-        setAssignment(res.data);
-        setLoading(false);
-      } catch (error) {
-        setError("Failed to load assignment details");
-        setLoading(false);
-      }
-    };
-    fetchAssignment();
-  }, [assignmentId]);
-
-  if (loading) return <p className="text-sm text-gray-400">Loading...</p>;
-  if (error) return <p className="text-sm text-red-500">{error}</p>;
+const AssignmentTab = ({ assignment }) => {
+  if (!assignment) {
+    return <div className="text-sm text-gray-600">Loading assignment...</div>;
+  }
 
   const formattedDue = assignment.dueDate
     ? new Date(assignment.dueDate).toLocaleDateString("en-IN", {
@@ -33,10 +13,13 @@ const AssignmentTab = () => {
       })
     : "No due date";
 
-    const formattedCreated = new Date(assignment.createdAt).toLocaleDateString(
-    "en-IN",
-    { day: "numeric", month: "short", year: "numeric" }
-  );
+  const formattedCreated = assignment.createdAt
+    ? new Date(assignment.createdAt).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      })
+    : "Unknown date";
 
   return (
     <>

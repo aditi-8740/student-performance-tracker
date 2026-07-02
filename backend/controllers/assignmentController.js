@@ -103,6 +103,7 @@ const gradeAssignment = async (req, res) => {
   try {
     const { marks } = req.body;
     const { submissionId } = req.params;
+    const numericMarks = Number(marks);
 
     // 1. find submission
     const SubmissionData = await Submission.findById(submissionId);
@@ -111,12 +112,16 @@ const gradeAssignment = async (req, res) => {
     }
 
     // 2. find assignment
-    const assignmentData = await Assignment.findById(
-      SubmissionData.assignmentId,
-    );
+    const assignmentData = await Assignment.findById(SubmissionData.assignmentId);
+    if (!assignmentData) {
+      return res.status(404).json({ message: "Assignment not found" });
+    }
 
     // 3. find class
     const classData = await Class.findById(assignmentData.class);
+    if (!classData) {
+      return res.status(404).json({ message: "Class not found" });
+    }
 
     // 4. Check teacher owns class
     if (classData.teacher.toString() !== req.user._id.toString()) {
@@ -124,12 +129,19 @@ const gradeAssignment = async (req, res) => {
     }
 
     // Basic Marks validation
-    if (marks < 0 || marks > 100) {
-      return res.status(400).json({ message: "Marks must be between 0-100" });
+    if (Number.isNaN(numericMarks) || numericMarks < 0) {
+      return res.status(400).json({ message: "Marks must be a valid non-negative number" });
+    }
+
+    if (assignmentData.marks != null && numericMarks > assignmentData.marks) {
+      return res.status(400).json({
+        message: `Marks must be between 0 and ${assignmentData.marks}`,
+      });
     }
 
     // 5. Update marks
-    SubmissionData.marks = marks;
+    SubmissionData.marks = numericMarks;
+    SubmissionData.status = "graded";
     await SubmissionData.save();
 
     res.json({ message: "Graded successfully", SubmissionData });
