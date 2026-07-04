@@ -54,10 +54,11 @@ A full-stack web application for managing classes, assignments, and student perf
 
 ### 🧩 Recent UI Enhancements
 
-- Added a dedicated class page with tabbed views for a more structured learning experience
-- Added an assignment submission page for individual student submissions
-- Added an all-submissions page with assignment details and a submissions list for teachers
-- Added a student list page for class-related participant management
+- Added a dedicated class page with nested assignment and student views for a more structured learning experience
+- Added a performance page for class-level assignment insights and student submission status
+- Added dedicated security pages for password changes, session management, and account safety
+- Added assignment submission and all-submissions pages for individual and teacher-side review flows
+- Added a student list page for class participant management
 - Improved assignment creation flow with a richer form experience
 - Added loading states for login and signup screens for smoother UX
 
@@ -182,6 +183,7 @@ SMART-SCHOOL-OS/
 │   │   │   ├── Dashboard.jsx
 │   │   │   ├── ForgotPassword.jsx
 │   │   │   ├── Login.jsx
+│   │   │   ├── PerformancePage.jsx
 │   │   │   ├── ResetPassword.jsx
 │   │   │   ├── SecurityPage.jsx
 │   │   │   ├── Signup.jsx
@@ -194,8 +196,7 @@ SMART-SCHOOL-OS/
 │   │   ├── App.css
 │   │   ├── App.jsx
 │   │   ├── index.css
-│   │   ├── main.jsx
-│   │   └── routes.jsx
+│   │   └── main.jsx
 │   ├── components.json
 │   ├── eslint.config.js
 │   ├── index.html
@@ -220,6 +221,28 @@ SMART-SCHOOL-OS/
 
 ---
 
+## 🧭 Frontend Routes
+
+The frontend is organized around a protected app shell under `/app`:
+
+- `/` → Login page
+- `/signup` → Signup page
+- `/forgot-password` → Password recovery
+- `/reset-password/:resetToken` → Reset password flow
+- `/app/dashboard` → Main dashboard
+- `/app/classes` → List of classes
+- `/app/classes/:classId` → Class details page
+- `/app/classes/:classId/assignments` → Assignments tab inside a class
+- `/app/classes/:classId/students` → Students tab inside a class
+- `/app/classes/:classId/assignments/:assignmentId/submit` → Student submission page
+- `/app/classes/:classId/assignments/:assignmentId/submissions` → Teacher submissions review page
+- `/app/performance/:classId` → Class performance page
+- `/app/settings/security` → Security settings page
+- `/app/settings/security/change-password` → Password change page
+- `/app/settings/security/user-sessions` → Active sessions page
+
+---
+
 ## 📦 API Endpoints
 
 ### Auth
@@ -240,19 +263,22 @@ SMART-SCHOOL-OS/
 
 ### Classes
 
-* GET `/api/classes` - Get classes for authenticated user
+* GET `/api/classes` - Get classes for the authenticated user
 * POST `/api/classes` - Create a class (Teacher only)
 * POST `/api/classes/enroll` - Enroll in a class (Student only)
 * GET `/api/classes/:classId` - Get class details
 * GET `/api/classes/:classId/assignments` - Get assignments for a class
 * GET `/api/classes/:classId/performance` - Get class performance (Teacher only)
+* GET `/api/classes/:classId/students` - Get all students in a class
 
 ### Assignments
 
 * POST `/api/assignments` - Create an assignment (Teacher only)
+* GET `/api/assignments/:assignmentId` - Get assignment details
 * POST `/api/assignments/:assignmentId/submissions` - Submit an assignment (Student only)
 * GET `/api/assignments/:assignmentId/submissions` - Get submissions for an assignment (Teacher only)
 * PATCH `/api/assignments/:assignmentId/submissions/:submissionId` - Grade a submission (Teacher only)
+* GET `/api/assignments/:assignmentId/performance` - Get assignment performance insights (Teacher only)
 
 ### Users
 

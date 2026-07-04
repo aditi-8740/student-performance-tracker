@@ -164,7 +164,7 @@ const getAssignmentPerformance = async (req, res) => {
   }
 
   // 2. find class
-  const classData = await Class.findById(assignmentData.class);
+  const classData = await Class.findById(assignmentData.class).populate("students", "name");
   if (!classData) {
     return res.status(404).json({ message: "Class not found" });
   }
@@ -174,26 +174,54 @@ const getAssignmentPerformance = async (req, res) => {
     return res.status(403).json({ message: "Not your class" });
   }
 
-  // get all Submissions of this assignment
-  const submissions = await Submission.find({ assignmentId: assignmentId }).populate("studentId", "name");
+  // 4. get all Submissions of this assignment
+  const submissions = await Submission.find({ assignmentId: assignmentId });
 
+  // 5. lookup map (studentId -> submission)
+  const submissionMap = new Map();
+  submissions.forEach((s) => {
+    submissionMap.set(s.studentId.toString(), s);
+  });
+
+  //6. loop over students to get all students performance data
+  const studentPerformanceList = classData.students.map((student)=>{
+    const sub = submissionMap.get(student._id.toString());
+
+    if(!sub){
+      return {
+        studentId: student._id,
+        name: student.name,
+        status: "Not submitted",
+        marks: null,
+        submittedAt:  null
+      }
+    }
+    return {
+      studentId: student._id,
+      name: student.name,
+      status: sub.status,
+      marks: sub.marks,
+      submittedAt: sub.createdAt
+    }
+  })
   
   //calculate average marks of this assignment
-  const avgMarks = submissions.reduce((acc, sub)=>{
+  const totalSum = submissions.reduce((acc, sub)=>{
     if(sub.marks != null){
       acc += sub.marks;
       return acc;
     }
     return acc;
-  },0) / submissions.length;
+  },0);
+  const avgMarks = submissions.length > 0 ? totalSum / submissions.length : null;
 
   //calculate highest marks of this assignment
   const highestMarks = submissions.reduce((max, sub)=>{
-    if(sub.marks != null && sub.marks > max){
+    if(sub.marks != null && (max== null || sub.marks > max)){
       return sub.marks;
     } 
     return max;
-  }, 0);
+  }, null);
 
   //calculate lowest marks of this assignment
   const lowestMarks = submissions.reduce((min, sub)=>{
@@ -203,20 +231,15 @@ const getAssignmentPerformance = async (req, res) => {
     return min;
   }, null);
 
-
-
   res.json({
     assignmentId: assignmentData._id,
     title: assignmentData.title,
     averageMarks: avgMarks,
     highestMarks: highestMarks,
     lowestMarks: lowestMarks,
-    totalSubmissions: submissions.length
+    totalSubmissions: submissions.length,
+    students: studentPerformanceList
   });
-
- 
-  
- 
 };
 
 export {

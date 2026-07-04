@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"; import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import API from "@/api/axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useParams } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 const PerformancePage = () => {
   const { classId } = useParams();
@@ -18,7 +20,7 @@ const PerformancePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [performanceData, setPerformanceData] = useState(null);
-  const [assignments, setAssignments] = useState(null);
+  const [assignments, setAssignments] = useState([]);
   const [assignmentPerformance, setAssignmentPerformance] = useState(null);
 
   useEffect(() => {
@@ -29,6 +31,7 @@ const PerformancePage = () => {
 
         setPerformanceData(res.data);
         setAssignments(res1.data);
+        console.log(performanceData);
         console.log(assignments);
       } catch (error) {
         setError(error);
@@ -49,6 +52,34 @@ const PerformancePage = () => {
     }
   };
 
+  const formatDate = (datestr) => {
+    if (!datestr) return "-";
+    const date = new Date(datestr);
+    return date.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  };
+
+  const getStatusBadge = (status) => {
+    if (status === "graded") {
+      return (
+        <Badge className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300">
+           Graded
+        </Badge>
+      );
+    } else if (status === "Not submitted") {
+      return (
+        <Badge className="bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300">
+          Not Submitted
+        </Badge>
+      );
+    }
+
+    return (
+      <Badge className="bg-yellow-50 text-yellow-700 dark:bg-yellow-950 dark:text-yellow-300">
+         Submitted
+      </Badge>
+    );
+  };
+
   if (loading) return <div className="text-sm">Loading...</div>;
   if (error)
     return <div className="text-red-500">Error loading performance data</div>;
@@ -60,7 +91,7 @@ const PerformancePage = () => {
         <h1 className="text-2xl text-center mb-2">PERFORMANCE</h1>
         <div className="text-center">{performanceData.classTitle}</div>
 
-        <div className="grid grid-cols-2 gap-2 sm:gap-4 md:grid-cols-4 mt-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 lg:grid-cols-5 mt-4">
           <Card className="sm:min-h-40 sm:max-w-50">
             <CardContent className="p-4 space-y-2">
               <h2 className="font-semibold sm:font-medium md:text-xl sm:text-lg ">
@@ -115,14 +146,16 @@ const PerformancePage = () => {
           <>
             <h1 className="mb-3">{assignmentPerformance.title}</h1>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 lg:grid-cols-5">
               <Card className="sm:min-h-40 sm:max-w-50 ">
                 <CardContent className="p-4 space-y-2">
                   <h2 className="font-semibold sm:font-medium md:text-xl sm:text-lg ">
                     Average Marks
                   </h2>
                   <p className="text-base text-muted-foreground">
-                    {assignmentPerformance.averageMarks}
+                    {assignmentPerformance.averageMarks === null
+                      ? "-"
+                      : assignmentPerformance.averageMarks}
                   </p>
                 </CardContent>
               </Card>
@@ -132,7 +165,9 @@ const PerformancePage = () => {
                     Highest Marks
                   </h2>
                   <p className="text-base text-muted-foreground">
-                    {assignmentPerformance.highestMarks}
+                    {assignmentPerformance.highestMarks === null
+                      ? "-"
+                      : assignmentPerformance.highestMarks}
                   </p>
                 </CardContent>
               </Card>
@@ -142,7 +177,9 @@ const PerformancePage = () => {
                     Lowest Marks
                   </h2>
                   <p className="text-base text-muted-foreground">
-                    {assignmentPerformance.lowestMarks}
+                    {assignmentPerformance.lowestMarks === null
+                      ? "-"
+                      : assignmentPerformance.lowestMarks}
                   </p>
                 </CardContent>
               </Card>
@@ -159,10 +196,49 @@ const PerformancePage = () => {
               </Card>
             </div>
             <div>
-              <h1 className="text sm:text-2xl mb-2 mt-5">
+              <h1 className="text sm:text-2xl mb-2 mt-7">
                 Student Performance
               </h1>
               <hr className="mt-2 mb-0" />
+              <div>
+                {assignmentPerformance?.students.length === 0 ? (
+                  <div className="text-sm text-muted-foreground mt-2">
+                    No students enrolled in this class.
+                  </div>
+                ) : (
+                  <div className=" overflow-x-auto">
+                    <Table>
+                      {/* <TableCaption>
+                          A list of your recent invoices.
+                        </TableCaption> */}
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-25">Students</TableHead>
+                          <TableHead className="text-center">Status</TableHead>
+                          <TableHead className="text-center">Marks</TableHead>
+                          <TableHead className="text-right">Submitted At</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {assignmentPerformance?.students.map((s) => (
+                          <TableRow key={s.studentId}>
+                            <TableCell className="font-medium">
+                              {s.name}
+                            </TableCell>
+                            <TableCell className="align-middle text-center" >
+                              {getStatusBadge(s.status)}
+                            </TableCell>
+                            <TableCell className="text-center">{s.marks == null ? "-" : s.marks}</TableCell>
+                            <TableCell className="text-right">
+                              {formatDate(s.submittedAt)}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </div>
             </div>
           </>
         )}

@@ -121,47 +121,7 @@ const getClassPerformance = async (req,res)=>{
             return res.status(403).json({ message: "Not your class" });
         }
         // get total no. of assignment for this class
-        const totalAssignments = await Assignment.find({class: classId}).countDocuments();
-        
-        // 3. get all students documents profile data enrolled in this class
-        // const students = await User.find({
-        //     _id : { $in : classData.students }
-        // });
-        
-        // 4. get ALL submissions documents of this class
-        // const submissions = await Submission.find({
-        //     studentId : { $in: classData.students}
-        // });
-
-        // 5. map student performance
-        // const studentPerformance = students.map(student => {
-        //     const studentSubs = submissions.filter(
-        //         sub => sub.studentId.toString() === student._id.toString() && sub.marks !== null
-        //     );
-
-        //     const marks = studentSubs.map(sub => sub.marks);
-
-        //     let avg=0;
-        //     if(marks.length > 0){
-        //         const sum = marks.reduce((a,b)=> a+b, 0);
-        //         avg = sum/ marks.length;
-        //     }
-
-        //     return {
-        //         studentId: student._id,
-        //         name: student.name,
-        //         average: avg
-        //     };
-        // })
-
-        // 6. class average
-        // const allMarksArray = submissions
-        // .filter(sub=> sub.marks != null)
-        // .map(sub=> sub.marks);
-
-        // const classAverage = allMarksArray.length > 0
-        // ? allMarksArray.reduce((a,b)=> a+b, 0) / allMarksArray.length
-        // : 0;
+        const totalAssignments = await Assignment.find({class: classId}).countDocuments();      
 
         res.json({
           classId: classData._id,
@@ -169,8 +129,6 @@ const getClassPerformance = async (req,res)=>{
             classSubject: classData.subject,
             totalStudents: classData.students.length,
             totalAssignments: totalAssignments,
-            // classAverage,
-            // students: studentPerformance
         });
         
     } catch (error) {

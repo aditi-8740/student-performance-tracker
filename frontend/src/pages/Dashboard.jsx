@@ -80,31 +80,6 @@ export default function Dashboard() {
 }
 
 
-
-  // //Fetch performance data
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       setLoading(true);
-
-  //       if (role === "student") {
-  //         const res = await API.get("/users/performance");
-  //         setData(res.data);
-  //       } else if (selectedClass) {
-  //         const res = await API.get(`/classes/${selectedClass}/performance`);
-  //         setData(res.data);
-  //       }
-  //     } catch (err) {
-  //       setError(true);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [selectedClass, role]);
-
-
 // {/* Views */}
 // {role === "student" && data && <StudentView data={data} />}
 
