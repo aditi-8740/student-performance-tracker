@@ -53,12 +53,17 @@ router.get('/:classId', protect, getClassDetails);
 router.get('/:classId/assignments', protect, getClassAssignmentDetails);
 
 /* 
-@route GET /api/classes/performance
+@route GET /api/classes/:classId/performance
 @desc Get class performance
 @access Private (Teacher Only)
 */
 router.get('/:classId/performance', protect , authorizeTeacher , getClassPerformance )
 
+/*
+@route GET /api/classes/:classId/students
+@desc Get all students in a specific class
+@access Private
+*/
 router.get('/:classId/students',protect, getStudents )
 
 export default router;

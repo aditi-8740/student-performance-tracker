@@ -20,7 +20,7 @@ const createAssignment = async (req, res) => {
       dueDate,
       teacher: req.user._id,
       class: classId,
-      marks
+      marks,
     });
 
     return res.status(201).json(createdAssignment);
@@ -112,7 +112,9 @@ const gradeAssignment = async (req, res) => {
     }
 
     // 2. find assignment
-    const assignmentData = await Assignment.findById(SubmissionData.assignmentId);
+    const assignmentData = await Assignment.findById(
+      SubmissionData.assignmentId,
+    );
     if (!assignmentData) {
       return res.status(404).json({ message: "Assignment not found" });
     }
@@ -130,7 +132,9 @@ const gradeAssignment = async (req, res) => {
 
     // Basic Marks validation
     if (Number.isNaN(numericMarks) || numericMarks < 0) {
-      return res.status(400).json({ message: "Marks must be a valid non-negative number" });
+      return res
+        .status(400)
+        .json({ message: "Marks must be a valid non-negative number" });
     }
 
     if (assignmentData.marks != null && numericMarks > assignmentData.marks) {
@@ -150,10 +154,76 @@ const gradeAssignment = async (req, res) => {
   }
 };
 
+const getAssignmentPerformance = async (req, res) => {
+  const assignmentId = req.params.assignmentId;
+  // 1. find assignment
+  const assignmentData = await Assignment.findById(assignmentId);
+
+  if (!assignmentData) {
+    return res.status(404).json({ message: "Assignment not found" });
+  }
+
+  // 2. find class
+  const classData = await Class.findById(assignmentData.class);
+  if (!classData) {
+    return res.status(404).json({ message: "Class not found" });
+  }
+
+  // 3. Check teacher owns class
+  if (classData.teacher.toString() !== req.user._id.toString()) {
+    return res.status(403).json({ message: "Not your class" });
+  }
+
+  // get all Submissions of this assignment
+  const submissions = await Submission.find({ assignmentId: assignmentId }).populate("studentId", "name");
+
+  
+  //calculate average marks of this assignment
+  const avgMarks = submissions.reduce((acc, sub)=>{
+    if(sub.marks != null){
+      acc += sub.marks;
+      return acc;
+    }
+    return acc;
+  },0) / submissions.length;
+
+  //calculate highest marks of this assignment
+  const highestMarks = submissions.reduce((max, sub)=>{
+    if(sub.marks != null && sub.marks > max){
+      return sub.marks;
+    } 
+    return max;
+  }, 0);
+
+  //calculate lowest marks of this assignment
+  const lowestMarks = submissions.reduce((min, sub)=>{
+    if(sub.marks != null && (min === null || sub.marks < min)){
+      return sub.marks;
+    }
+    return min;
+  }, null);
+
+
+
+  res.json({
+    assignmentId: assignmentData._id,
+    title: assignmentData.title,
+    averageMarks: avgMarks,
+    highestMarks: highestMarks,
+    lowestMarks: lowestMarks,
+    totalSubmissions: submissions.length
+  });
+
+ 
+  
+ 
+};
+
 export {
   createAssignment,
   submitAssignment,
   getSubmissions,
   gradeAssignment,
   getAssignment,
+  getAssignmentPerformance,
 };

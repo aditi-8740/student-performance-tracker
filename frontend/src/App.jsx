@@ -17,6 +17,7 @@ import AssignmentsPage from "./pages/AssignmentsPage";
 import StudentsPage from "./pages/StudentsPage";
 import SubmissionPage from "./pages/SubmissionPage";
 import AllSubmissionsPage from "./pages/AllSubmissionsPage";
+import PerformancePage from "./pages/PerformancePage";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
@@ -71,6 +72,7 @@ function App() {
               element={<UserSessions />}
             />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="performance/:classId" element={<PerformancePage />} />
             <Route path="classes" element={<Classes />} />
 
             <Route path="classes/:classId" element={<ClassPage />}>

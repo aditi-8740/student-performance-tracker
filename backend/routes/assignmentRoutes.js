@@ -7,7 +7,8 @@ import {
     submitAssignment,
     getSubmissions,
     gradeAssignment,
-    getAssignment
+    getAssignment,
+    getAssignmentPerformance
 } from '../controllers/assignmentController.js'
 
 /**
@@ -50,5 +51,13 @@ router.get('/:assignmentId/submissions', protect, authorizeTeacher, getSubmissio
 @access Private (Teacher Only)
 */
 router.patch("/:assignmentId/submissions/:submissionId", protect, authorizeTeacher, gradeAssignment);
+
+/*
+@route GET /api/assignments/:assignmentId/performance
+@desc Get performance of a specific assignment
+@access Private (Teacher Only)
+*/
+router.get('/:assignmentId/performance', protect, authorizeTeacher, getAssignmentPerformance);
+
 
 export default router;

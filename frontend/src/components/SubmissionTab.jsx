@@ -29,7 +29,7 @@ const SubmissionTab = ({ totalMarks }) => {
     const fetchSubmissions = async () => {
       try {
         const res = await API.get(`/assignments/${assignmentId}/submissions`);
-        setSubmissions(Array.isArray(res.data) ? res.data : []);
+        setSubmissions(res.data);
       } catch (error) {
         setError("Failed to load submissions.");  
       } finally {

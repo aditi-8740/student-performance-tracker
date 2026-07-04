@@ -149,7 +149,7 @@ export default function Classes() {
               onClick={() => {
                 navigate(`/app/classes/${cls._id}/assignments`);
               }}
-              className="cursor-pointer"
+              className="cursor-pointer min-h-50"
             >
               <CardContent className="p-4 space-y-2">
                 <h2 className="font-medium md:text-xl text-lg hover:underline hover:underline-offset-4 ">
